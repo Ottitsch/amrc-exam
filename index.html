@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMRC — Visual Chapter Guide</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #eef1f7;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+/* ── STICKY HEADER ── */
+#topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(100deg, #0f1628 0%, #162040 100%);
+  padding: 12px 16px 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+#topbar .sub {
+  font-size: 10px;
+  color: #7aaccc;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+#topbar h1 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+/* ── TAB BAR ── */
+#tabbar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  align-items: center;
+}
+#tabbar::-webkit-scrollbar { display: none; }
+
+.part-badge {
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  border-radius: 5px;
+  padding: 3px 6px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.part-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex-shrink: 0;
+  padding: 6px 11px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: rgba(255,255,255,0.1);
+  color: #ccd8e8;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.tab-btn.active {
+  border-color: var(--acc);
+  background: var(--chcol);
+  color: var(--acc);
+}
+
+/* ── MAIN CONTENT ── */
+#content {
+  padding: 16px 14px 40px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ── CHAPTER HEADER ── */
+.ch-header {
+  border-radius: 16px;
+  padding: 18px 16px;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+.ch-header-deco {
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  opacity: 0.07;
+  pointer-events: none;
+}
+.ch-header-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.ch-icon { font-size: 36px; line-height: 1; flex-shrink: 0; }
+.ch-num-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.ch-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f1628;
+  letter-spacing: -0.4px;
+  line-height: 1.25;
+}
+.ch-summary {
+  font-size: 14px;
+  color: #2a2a4a;
+  line-height: 1.7;
+}
+.ch-note {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 0 8px 8px 0;
+  font-size: 12.5px;
+  color: #444;
+  line-height: 1.55;
+}
+
+/* ── FORMULAS HEADING ── */
+.formulas-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #667;
+  margin-bottom: 12px;
+}
+.sigma-badge {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-family: Georgia, serif;
+  flex-shrink: 0;
+}
+
+/* ── FORMULA CARD ── */
+.formula-card { margin-bottom: 10px; }
+
+.formula-btn {
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1.5px solid #dde5f0;
+  border-radius: 10px;
+  padding: 13px 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+.formula-btn.open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.formula-btn-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.formula-label-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.formula-toggle {
+  font-size: 11px;
+  color: #aaa;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: transform 0.15s;
+}
+.formula-toggle.open { transform: rotate(180deg); }
+.formula-math {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  color: #0f1628;
+  background: #f4f6fa;
+  border-radius: 7px;
+  padding: 9px 13px;
+  line-height: 1.6;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.formula-vars {
+  border: 1.5px solid var(--acc);
+  border-top: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 12px 14px 8px;
+  background: #fafbfd;
+  display: none;
+}
+.formula-vars.open { display: block; }
+.vars-heading {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #999;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.var-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0 12px;
+  margin-bottom: 11px;
+  align-items: start;
+}
+.var-sym {
+  font-family: Georgia, serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding-top: 1px;
+  word-break: break-all;
+}
+.var-desc {
+  font-size: 13.5px;
+  color: #333;
+  line-height: 1.55;
+}
+
+/* ── APPLIED CHAPTER ── */
+.applied-box {
+  background: #fff;
+  border: 2px dashed #cdd5e0;
+  border-radius: 14px;
+  padding: 32px 20px;
+  text-align: center;
+  color: #8899aa;
+}
+.applied-box .big-icon { font-size: 32px; margin-bottom: 10px; }
+.applied-box h3 { font-size: 15px; font-weight: 700; color: #4a5870; margin-bottom: 6px; }
+.applied-box p { font-size: 13px; line-height: 1.65; }
+
+/* ── NAV ── */
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1.5px solid #dde5f0;
+}
+.nav-btn {
+  padding: 11px 20px;
+  border-radius: 10px;
+  border: 1.5px solid #c8d4e0;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 100px;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.nav-btn:disabled { opacity: 0.4; cursor: default; }
+.nav-counter { font-size: 12px; color: #889; font-weight: 600; }
+
+/* ── FADE ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#content { animation: fadeIn 0.2s ease; }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="sub">TU Wien · Prof. Dr. Peter Filzmoser</div>
+  <h1>AMRC — Visual Chapter Guide</h1>
+  <div id="tabbar"></div>
+</div>
+
+<div id="content"></div>
+
+<script>
+const chapters = [
+  {
+    id:1, part:"I", partLabel:"Fundamentals", num:"Ch 1",
+    title:"The Linear Regression Model",
+    color:"#e8f4f8", accent:"#1a6b8a", icon:"📐",
+    summary:"Describes a response variable y as a linear combination of input predictors. The unknown coefficients are estimated by minimising the sum of squared residuals.",
+    formulas:[
+      { label:"The linear model", latex:"y = β₀ + x₁β₁ + … + xₚβₚ + ε",
+        vars:[
+          {sym:"y",         desc:"Response (output) variable — what you want to predict"},
+          {sym:"β₀",        desc:"Intercept — the predicted value when all xⱼ = 0"},
+          {sym:"βⱼ",        desc:"Coefficient for predictor j — how much y changes per unit of xⱼ"},
+          {sym:"xⱼ",        desc:"The j-th predictor (input) variable, j = 1, …, p"},
+          {sym:"ε",         desc:"Error term — assumed εᵢ ~ N(0, σ²), i.e. normally distributed noise"},
+        ]},
+      { label:"Least-squares estimator (OLS)", latex:"β̂ = (XᵀX)⁻¹ Xᵀy",
+        vars:[
+          {sym:"β̂",        desc:"Vector of estimated coefficients (β̂₀, β̂₁, …, β̂ₚ)"},
+          {sym:"X",         desc:"Design matrix — n × (p+1) matrix whose rows are observations (1, xᵢ₁, …, xᵢₚ)"},
+          {sym:"Xᵀ",        desc:"Transpose of the design matrix"},
+          {sym:"(XᵀX)⁻¹",  desc:"Inverse of the Gram matrix — exists only when X has full column rank"},
+          {sym:"y",         desc:"n-vector of observed response values (y₁, …, yₙ)"},
+        ]},
+      { label:"Hat matrix (fitted values)", latex:"ŷ = Hy,   H = X(XᵀX)⁻¹Xᵀ",
+        vars:[
+          {sym:"ŷ", desc:"Vector of fitted (predicted) values"},
+          {sym:"H", desc:"Hat matrix — projects y onto the column space of X; 'puts the hat on y'"},
+        ]},
+      { label:"t-statistic for testing βⱼ = 0", latex:"zⱼ = β̂ⱼ / (σ̂ √dⱼ)",
+        vars:[
+          {sym:"β̂ⱼ", desc:"Estimated coefficient for predictor j"},
+          {sym:"σ̂",  desc:"Estimated residual standard deviation: σ̂² = RSS/(n−p−1)"},
+          {sym:"dⱼ",  desc:"j-th diagonal element of (XᵀX)⁻¹ — scales the standard error of β̂ⱼ"},
+          {sym:"zⱼ",  desc:"Test statistic; under H₀ distributed as tₙ₋ₚ₋₁"},
+        ]},
+    ]
+  },
+  {
+    id:2, part:"I", partLabel:"Fundamentals", num:"Ch 2",
+    title:"Model Comparison & Selection",
+    color:"#f0f8ee", accent:"#2d7a3a", icon:"⚖️",
+    summary:"Provides tools to choose among competing models: F-tests compare nested models, information criteria (AIC, BIC) balance fit vs. complexity, and resampling methods estimate prediction error.",
+    formulas:[
+      { label:"F-statistic (nested models)", latex:"F = [(RSS₀ − RSS₁)/(p₁−p₀)] / [RSS₁/(n−p₁−1)]",
+        vars:[
+          {sym:"RSS₀",    desc:"Residual sum of squares of the smaller model M₀ (with p₀ predictors)"},
+          {sym:"RSS₁",    desc:"Residual sum of squares of the larger model M₁ (with p₁ predictors)"},
+          {sym:"p₁ − p₀", desc:"Number of additional parameters in M₁ versus M₀"},
+          {sym:"n",        desc:"Total number of observations"},
+          {sym:"F",        desc:"Under H₀ (smaller model correct) distributed as F_{p₁−p₀, n−p₁−1}"},
+        ]},
+      { label:"Coefficient of determination R²", latex:"R² = 1 − RSS/TSS = RegSS/TSS",
+        vars:[
+          {sym:"RSS",   desc:"Residual sum of squares Σ(yᵢ − ŷᵢ)²"},
+          {sym:"TSS",   desc:"Total sum of squares Σ(yᵢ − ȳ)² — total variance in y"},
+          {sym:"RegSS", desc:"Regression sum of squares Σ(ŷᵢ − ȳ)² — variance explained by the model"},
+          {sym:"R²",    desc:"Proportion of variance explained; R² ∈ [0,1], larger is better"},
+        ]},
+      { label:"AIC — Akaike Information Criterion", latex:"AIC = −2 max log L + 2p",
+        vars:[
+          {sym:"max log L", desc:"Maximised log-likelihood — measures how well the model fits"},
+          {sym:"p",         desc:"Number of estimated parameters — the penalty for complexity"},
+          {sym:"AIC",       desc:"Select the model with minimum AIC. When σ² unknown: AIC = n·log(RSS/n) + 2p"},
+        ]},
+      { label:"BIC — Bayesian Information Criterion", latex:"BIC = −2 max log L + log(n)·p",
+        vars:[
+          {sym:"log(n)", desc:"Natural log of sample size — grows with n, penalises more than AIC for n > 8"},
+          {sym:"p",      desc:"Number of parameters"},
+        ]},
+      { label:"Cross-validation error", latex:"ĈVErr = (1/n) Σᵢ L(yᵢ, ŷᵢ)",
+        vars:[
+          {sym:"L(yᵢ, ŷᵢ)", desc:"Loss function comparing observed yᵢ to out-of-fold prediction ŷᵢ"},
+          {sym:"ŷᵢ",         desc:"Prediction for i using the model fitted on the other q−1 folds"},
+          {sym:"q",           desc:"Number of folds; q=10 is common; q=n is leave-one-out (LOO)"},
+        ]},
+    ]
+  },
+  {
+    id:3, part:"II", partLabel:"Linear Regression", num:"Ch 3",
+    title:"Linear Methods",
+    color:"#fdf3e8", accent:"#a85c00", icon:"🔧",
+    summary:"Beyond ordinary least squares: PCR and PLS use derived components to handle correlated predictors, while Ridge and Lasso impose penalties to shrink coefficients and reduce variance.",
+    formulas:[
+      { label:"Bias-Variance decomposition of MSE", latex:"MSE = σ² + Var(ŷ) + [E(y − ŷ)]²",
+        vars:[
+          {sym:"σ²",          desc:"Irreducible error — inherent noise in the data, cannot be reduced"},
+          {sym:"Var(ŷ)",       desc:"Variance of the prediction — how much ŷ changes across different training sets"},
+          {sym:"[E(y − ŷ)]²", desc:"Squared bias — systematic error; zero for unbiased estimators like OLS"},
+        ]},
+      { label:"Ridge regression", latex:"β̂Ridge = argmin{ Σ(yᵢ−β₀−Σxᵢⱼβⱼ)² + λ Σβⱼ² }",
+        vars:[
+          {sym:"λ ≥ 0",   desc:"Tuning parameter — larger λ means stronger shrinkage toward zero"},
+          {sym:"Σβⱼ²",    desc:"L2 penalty — sum of squared coefficients; penalises large coefficients"},
+          {sym:"β̂Ridge", desc:"Closed-form solution: (XᵀX + λI)⁻¹Xᵀy — never exactly zero, shrinks all"},
+        ]},
+      { label:"Lasso regression", latex:"β̂Lasso = argmin{ Σ(yᵢ−β₀−Σxᵢⱼβⱼ)² + λ Σ|βⱼ| }",
+        vars:[
+          {sym:"Σ|βⱼ|",   desc:"L1 penalty — diamond-shaped constraint drives some coefficients to exactly zero (variable selection)"},
+          {sym:"λ",        desc:"Tuning parameter — increasing λ progressively zeros out more coefficients"},
+          {sym:"s",        desc:"Equivalent form: Σ|βⱼ| ≤ s — directly bounds total coefficient magnitude"},
+        ]},
+      { label:"PCR — spectral decomposition (p. 18)", latex:"Cov(X) = VAVᵀ,   Z = XV",
+        vars:[
+          {sym:"V",   desc:"p × p matrix of eigenvectors of Cov(X) — each column vᵢ is a principal component direction"},
+          {sym:"A",   desc:"Diagonal matrix of eigenvalues a₁ ≥ a₂ ≥ … ≥ aₚ — variance explained by each component"},
+          {sym:"Z",   desc:"Score matrix — n × p matrix of principal component values; columns of Z are uncorrelated"},
+        ]},
+      { label:"PCR — reduced model estimator (p. 19)", latex:"θ̂₁:q = (Z₁:qᵀZ₁:q)⁻¹ Z₁:qᵀy,   β̃ = V₁:q θ̂₁:q",
+        vars:[
+          {sym:"q",       desc:"Number of principal components retained (1 ≤ q < p) — chosen by CV"},
+          {sym:"Z₁:q",    desc:"First q columns of Z — the q most variable components of X"},
+          {sym:"θ̂₁:q",   desc:"OLS coefficients in the reduced PC space"},
+          {sym:"β̃",      desc:"Back-transformed coefficients in the original variable space: β̃ = V₁:q θ̂₁:q"},
+        ]},
+      { label:"PLS — loading direction (p. 20)", latex:"wₖ = argmax Cov(y, Xw)   s.t. ‖wₖ‖=1, Cov(Xwₖ,Xwⱼ)=0 for j<k",
+        vars:[
+          {sym:"wₖ",             desc:"k-th PLS loading vector — direction in X-space most correlated with y"},
+          {sym:"Cov(y, Xw)",     desc:"Covariance between y and the projection Xw — PLS maximises this directly"},
+          {sym:"Cov(Xwₖ,Xwⱼ)=0", desc:"Orthogonality constraint — each new component must be uncorrelated with previous ones"},
+          {sym:"T = XW",         desc:"Score matrix — columns tₖ = Xwₖ are the PLS components used for regression"},
+        ]},
+      { label:"Continuum regression direction (p. 20)", latex:"wₖ = argmax [Cov(y,Xw)]² [Var(Xw)]^(δ/(1−δ)−1)",
+        vars:[
+          {sym:"δ ∈ [0,1]",  desc:"Mixing parameter: δ=0 → OLS, δ=0.5 → PLS, δ=1 → PCR"},
+          {sym:"Cov(y, Xw)", desc:"Covariance between y and projection Xw — captures relevance for predicting y"},
+          {sym:"Var(Xw)",    desc:"Variance of the projection — captures how much of X's structure it explains"},
+        ]},
+    ]
+  },
+  {
+    id:5, part:"III", partLabel:"Linear Classification", num:"Ch 5",
+    title:"Linear Classification",
+    color:"#fff0f0", accent:"#a02020", icon:"🎯",
+    summary:"Assigns observations to classes using linear decision boundaries. LDA assumes Gaussian classes with equal covariance; QDA relaxes that; logistic regression models class probabilities directly.",
+    formulas:[
+      { label:"LDA linear discriminant function", latex:"δₖ(x) = xᵀΣ⁻¹μₖ − ½μₖᵀΣ⁻¹μₖ + log πₖ",
+        vars:[
+          {sym:"x",      desc:"New observation (p-dimensional feature vector) to classify"},
+          {sym:"μₖ",     desc:"Mean vector of class k — sample mean of training points in class k"},
+          {sym:"Σ",      desc:"Pooled (common) covariance matrix — assumed equal across all classes"},
+          {sym:"πₖ",     desc:"Prior probability of class k — estimated as nₖ/n"},
+          {sym:"δₖ(x)",  desc:"Score for class k; classify x to argmax_k δₖ(x)"},
+        ]},
+      { label:"QDA quadratic discriminant function", latex:"δₖ(x) = −½log|Σₖ| − ½(x−μₖ)ᵀΣₖ⁻¹(x−μₖ) + log πₖ",
+        vars:[
+          {sym:"|Σₖ|",                desc:"Determinant of class-specific covariance Σₖ — penalises spread"},
+          {sym:"(x−μₖ)ᵀΣₖ⁻¹(x−μₖ)", desc:"Mahalanobis distance from x to class k centre"},
+          {sym:"Σₖ",                  desc:"Class-specific covariance — QDA estimates a separate Σₖ per class"},
+        ]},
+      { label:"Regularised discriminant covariance", latex:"Σ̂ₖ(α) = αΣ̂ₖ + (1−α)Σ̂",
+        vars:[
+          {sym:"α ∈ [0,1]", desc:"α=0 → LDA (pooled Σ), α=1 → QDA (class-specific Σ)"},
+          {sym:"Σ̂ₖ",        desc:"Sample covariance of class k"},
+          {sym:"Σ̂",         desc:"Pooled covariance: weighted average across all classes"},
+        ]},
+      { label:"Logistic regression (K classes, p. 51)", latex:"log P(G=k|x)/P(G=K|x) = βₖ₀ + βₖᵀx   for k = 1,…,K−1",
+        vars:[
+          {sym:"P(G=k|x)/P(G=K|x)", desc:"Log-odds of class k relative to the reference class K — each pair of classes gets its own linear model"},
+          {sym:"βₖ₀",               desc:"Intercept for class k — one per non-reference class"},
+          {sym:"βₖ",                desc:"p-vector of coefficients for class k"},
+          {sym:"K",                 desc:"Reference class — choice is arbitrary; estimates are equivariant under different choices"},
+          {sym:"P(G=k|x)",          desc:"Posterior probability for class k: exp{βₖ₀+βₖᵀx} / [1 + Σₗ exp{βₗ₀+βₗᵀx}]"},
+          {sym:"P(G=K|x)",          desc:"Posterior probability for reference class K: 1 / [1 + Σₗ exp{βₗ₀+βₗᵀx}]"},
+        ]},
+      { label:"Logistic regression (2 classes, p. 51)", latex:"P(G=1|x) = exp(β₀+β₁ᵀx) / [1 + exp(β₀+β₁ᵀx)]",
+        vars:[
+          {sym:"β₀",      desc:"Intercept — shifts the decision boundary"},
+          {sym:"β₁",      desc:"p-vector of log-odds coefficients for predictors x"},
+          {sym:"P(G=1|x)", desc:"Posterior probability of class 1; threshold at 0.5 to assign class"},
+        ]},
+    ]
+  },
+  {
+    id:7, part:"IV", partLabel:"Nonlinear Methods", num:"Ch 7",
+    title:"Basis Expansions",
+    color:"#eef5ff", accent:"#1a4a9a", icon:"〰️",
+    summary:"Extends linear models to capture nonlinear patterns by replacing raw predictors with transformed versions — polynomials, splines — while keeping a linear model structure in the new features.",
+    formulas:[
+      { label:"Basis expansion model", latex:"f(x) = Σₘ βₘ hₘ(x)",
+        vars:[
+          {sym:"hₘ(x)", desc:"m-th transformation (basis function) of x — e.g. x², log(x), spline knot functions"},
+          {sym:"βₘ",    desc:"Coefficient for the m-th basis function — estimated by OLS in the new space"},
+          {sym:"M",     desc:"Total number of basis functions used"},
+        ]},
+      { label:"Spline basis (order M, knot ξₗ)", latex:"hⱼ(x) = x^(j−1),   hₘ₊ₗ(x) = (x−ξₗ)₊^(M−1)",
+        vars:[
+          {sym:"ξₗ",        desc:"l-th knot — boundary point where polynomial pieces join; placed at data percentiles"},
+          {sym:"(x−ξₗ)₊",   desc:"Positive part: equals (x−ξₗ) if x > ξₗ, else zero"},
+          {sym:"M−1",       desc:"Degree of polynomial pieces; M=4 gives cubic splines"},
+          {sym:"M+k",       desc:"Total degrees of freedom for a spline with k knots"},
+        ]},
+      { label:"Smoothing spline — penalised criterion", latex:"RSS(f,λ) = Σᵢ{yᵢ−f(xᵢ)}² + λ∫[f″(t)]² dt",
+        vars:[
+          {sym:"f″(t)",       desc:"Second derivative of f — measures curvature; large f″ means a wiggly function"},
+          {sym:"λ",           desc:"Smoothing parameter: λ=0 interpolates all data; λ→∞ gives a straight OLS line"},
+          {sym:"∫[f″(t)]² dt", desc:"Total curvature penalty — discourages overfitting wiggles"},
+        ]},
+      { label:"Smoothing spline estimator", latex:"θ̂ = (NᵀN + λΩN)⁻¹Nᵀy",
+        vars:[
+          {sym:"N",  desc:"Matrix of natural cubic spline basis functions: {N}ᵢⱼ = Nⱼ(xᵢ)"},
+          {sym:"ΩN", desc:"Roughness penalty matrix: {ΩN}ⱼₖ = ∫Nⱼ″(t)Nₖ″(t)dt"},
+          {sym:"θ̂", desc:"Spline coefficients — analogous to Ridge regression with penalty matrix λΩN"},
+        ]},
+    ]
+  },
+  {
+    id:9, part:"IV", partLabel:"Nonlinear Methods", num:"Ch 9",
+    title:"Generalized Additive Models",
+    color:"#eefaf3", accent:"#1a7a4a", icon:"📈",
+    summary:"GAMs replace each linear term βⱼxⱼ with an unknown smooth function fⱼ(xⱼ). The backfitting algorithm estimates each function by iteratively fitting it to the residuals from all others.",
+    note:"Backfitting: initialise α̂ = ȳ, f̂ⱼ ≡ 0; cycle j=1,…,p fitting f̂ⱼ ← Sⱼ[residuals] until convergence.",
+    formulas:[
+      { label:"GAM model via link function g", latex:"g[μ(x)] = α + f₁(x₁) + f₂(x₂) + … + fₚ(xₚ)",
+        vars:[
+          {sym:"g(·)",        desc:"Link function: identity g(μ)=μ for regression; logit g(μ)=log(μ/(1−μ)) for classification"},
+          {sym:"μ(x) = E(y|x)", desc:"Conditional mean of y given predictors x"},
+          {sym:"fⱼ(xⱼ)",      desc:"Unknown smooth function for predictor j — estimated as a cubic smoothing spline"},
+          {sym:"α",            desc:"Intercept — estimated as the overall mean ȳ"},
+        ]},
+      { label:"Penalised RSS (PRSS)", latex:"PRSS = Σᵢ{yᵢ−α−Σⱼfⱼ(xᵢⱼ)}² + Σⱼ λⱼ∫[fⱼ″(tⱼ)]² dtⱼ",
+        vars:[
+          {sym:"λⱼ",              desc:"Per-predictor smoothing parameter — controls how wiggly fⱼ can be"},
+          {sym:"∫[fⱼ″(tⱼ)]² dtⱼ", desc:"Roughness of fⱼ — penalises non-linearity for predictor j independently"},
+        ]},
+    ]
+  },
+  {
+    id:11, part:"IV", partLabel:"Nonlinear Methods", num:"Ch 11",
+    title:"Tree-Based Methods",
+    color:"#fffbe8", accent:"#7a6000", icon:"🌳",
+    summary:"Decision trees recursively partition the feature space into rectangular regions, fitting a constant in each. Regression trees predict the mean; classification trees the majority class. Random Forests average many trees for stability.",
+    formulas:[
+      { label:"Best split criterion (regression)", latex:"min_{j,s} [ min_{c₁} Σ_{xᵢ∈R₁}(yᵢ−c₁)² + min_{c₂} Σ_{xᵢ∈R₂}(yᵢ−c₂)² ]",
+        vars:[
+          {sym:"j",                 desc:"Split variable — which predictor to split on"},
+          {sym:"s",                 desc:"Split point — threshold value along predictor j"},
+          {sym:"R₁(j,s)",           desc:"Left region: observations with xⱼ ≤ s"},
+          {sym:"R₂(j,s)",           desc:"Right region: observations with xⱼ > s"},
+          {sym:"ĉₘ = ave(yᵢ|xᵢ∈Rₘ)", desc:"Optimal constant prediction in region m: the mean y in that region"},
+        ]},
+      { label:"Cost-complexity pruning", latex:"cα(T) = Σₘ nₘ Qₘ(T) + α|T|",
+        vars:[
+          {sym:"|T|",   desc:"Number of terminal (leaf) nodes — proxy for model complexity"},
+          {sym:"nₘ",    desc:"Number of observations in terminal node m"},
+          {sym:"Qₘ(T)", desc:"Node impurity: MSE for regression; Gini or entropy for classification"},
+          {sym:"α ≥ 0", desc:"Pruning parameter: α=0 keeps full tree; large α yields small tree"},
+        ]},
+      { label:"Gini index (classification)", latex:"Gini = Σₖ p̂ₘₖ(1 − p̂ₘₖ)",
+        vars:[
+          {sym:"p̂ₘₖ",     desc:"Proportion of class k observations in node m"},
+          {sym:"Gini = 0",  desc:"Pure node — all observations belong to one class"},
+          {sym:"Gini → max", desc:"Impure node — classes equally distributed; max = 1 − 1/K"},
+        ]},
+      { label:"Random Forest variable importance", latex:"θ̂ⱼ = (1/B) Σ_b δ_bⱼ,   δ_bⱼ = π_bⱼ − π_b",
+        vars:[
+          {sym:"B",     desc:"Number of trees in the forest"},
+          {sym:"π_b",   desc:"Impurity of tree b on OOB (out-of-bag) data"},
+          {sym:"π_bⱼ",  desc:"Impurity after randomly permuting predictor j in OOB data"},
+          {sym:"δ_bⱼ",  desc:"Impurity increase from permuting j — j's contribution to prediction accuracy"},
+          {sym:"θ̂ⱼ",   desc:"Variable importance: average impurity increase across all B trees"},
+        ]},
+    ]
+  },
+  {
+    id:13, part:"IV", partLabel:"Nonlinear Methods", num:"Ch 13",
+    title:"Support Vector Machines",
+    color:"#f5eaf8", accent:"#7a1a9a", icon:"🔬",
+    summary:"SVMs find the maximum-margin hyperplane separating two classes. Slack variables handle non-separable cases. The kernel trick implicitly maps data to higher dimensions for nonlinear boundaries.",
+    formulas:[
+      { label:"Hyperplane definition", latex:"f(x) = β₀ + βᵀx = 0",
+        vars:[
+          {sym:"f(x)",  desc:"Signed value for point x — equals 0 on the hyperplane, positive one side, negative the other"},
+          {sym:"β₀",    desc:"Bias (intercept) — shifts the hyperplane away from the origin"},
+          {sym:"β",     desc:"Raw (unnormalised) weight vector — points perpendicular to the hyperplane; βᵀx is the dot product β₁x₁ + … + βₚxₚ. Note β/‖β‖ is the unit normal"},
+          {sym:"x",     desc:"Input point (p-dimensional feature vector) being evaluated"},
+        ]},
+      { label:"Max-margin optimisation (separable)", latex:"min ‖β‖   s.t.  gᵢ(xᵢᵀβ + β₀) ≥ 1  ∀i",
+        vars:[
+          {sym:"gᵢ ∈ {−1,+1}",     desc:"Class label of observation i"},
+          {sym:"‖β‖",               desc:"Norm of weight vector — margin M = 1/‖β‖; minimising ‖β‖ maximises M"},
+          {sym:"gᵢ(xᵢᵀβ + β₀) ≥ 1", desc:"Margin constraint — each point must be ≥ M away from the boundary"},
+        ]},
+      { label:"Non-separable case with slack variables", latex:"min ½‖β‖² + C Σᵢ ξᵢ   s.t.  gᵢ(xᵢᵀβ+β₀) ≥ 1−ξᵢ,  ξᵢ ≥ 0",
+        vars:[
+          {sym:"ξᵢ ≥ 0", desc:"Slack variable — how far observation i is on the wrong side of its margin"},
+          {sym:"C > 0",   desc:"Cost parameter: large C → narrow margin; small C → wide margin"},
+          {sym:"Σξᵢ",     desc:"Total constraint violation; ξᵢ > 1 means observation i is misclassified"},
+        ]},
+      { label:"Kernel function", latex:"K(u,v) = ⟨h(u), h(v)⟩",
+        vars:[
+          {sym:"h(·)",       desc:"Implicit mapping to higher-dimensional space — never computed explicitly"},
+          {sym:"K(u,v)",     desc:"Computes the inner product in the transformed space efficiently"},
+          {sym:"RBF kernel",  desc:"K(u,v) = exp(−γ‖u−v‖²);  γ > 0 controls how fast similarity decays"},
+          {sym:"Poly kernel", desc:"K(u,v) = (c₀ + γ⟨u,v⟩)^d;  d = degree, c₀ and γ are parameters"},
+        ]},
+    ]
+  },
+];
+
+const partMeta = {
+  "I":   { bg:"#1a6b8a", label:"Part I" },
+  "II":  { bg:"#a85c00", label:"Part II" },
+  "III": { bg:"#a02020", label:"Part III" },
+  "IV":  { bg:"#1a4a9a", label:"Part IV" },
+};
+
+let activeId = 1;
+
+// ── Build tab bar ──────────────────────────────────────────────
+function buildTabBar() {
+  const bar = document.getElementById('tabbar');
+  bar.innerHTML = '';
+  ['I','II','III','IV'].forEach(part => {
+    const group = document.createElement('div');
+    group.className = 'part-group';
+
+    const badge = document.createElement('div');
+    badge.className = 'part-badge';
+    badge.style.background = partMeta[part].bg;
+    badge.textContent = partMeta[part].label;
+    group.appendChild(badge);
+
+    chapters.filter(c => c.part === part).forEach(ch => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (ch.id === activeId ? ' active' : '');
+      btn.style.setProperty('--acc', ch.accent);
+      btn.style.setProperty('--chcol', ch.color);
+      btn.dataset.id = ch.id;
+      btn.innerHTML = `<span style="font-size:13px">${ch.icon}</span><span>${ch.num}</span>`;
+      btn.addEventListener('click', () => goTo(ch.id));
+      if (ch.id === activeId) btn.dataset.active = '1';
+      group.appendChild(btn);
+    });
+    bar.appendChild(group);
+  });
+
+  // Scroll active tab into view
+  const activeBtn = bar.querySelector('[data-active]');
+  if (activeBtn) activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+// ── Build chapter content ──────────────────────────────────────
+function buildContent() {
+  const activeIndex = chapters.findIndex(c => c.id === activeId);
+  const ch = chapters[activeIndex];
+  const content = document.getElementById('content');
+
+  const noteHTML = ch.note
+    ? `<div class="ch-note" style="border-left:3px solid ${ch.accent};background:${ch.accent}18">
+        <strong style="color:${ch.accent}">Note: </strong>${ch.note}
+       </div>`
+    : '';
+
+  let formulasHTML = '';
+  if (ch.formulas.length > 0) {
+    const cards = ch.formulas.map((f, fi) => `
+      <div class="formula-card">
+        <button class="formula-btn" id="fb-${fi}" onclick="toggleFormula(${fi},'${ch.accent}')" style="--acc:${ch.accent}">
+          <div class="formula-btn-top">
+            <span class="formula-label-text" style="color:${ch.accent}">${f.label}</span>
+            <span class="formula-toggle" id="ft-${fi}">▼</span>
+          </div>
+          <div class="formula-math">${f.latex}</div>
+        </button>
+        <div class="formula-vars" id="fv-${fi}" style="--acc:${ch.accent}">
+          <div class="vars-heading">Variable guide</div>
+          ${f.vars.map(v => `
+            <div class="var-row">
+              <span class="var-sym" style="color:${ch.accent}">${v.sym}</span>
+              <span class="var-desc">${v.desc}</span>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+
+    formulasHTML = `
+      <div class="formulas-heading">
+        <div class="sigma-badge" style="background:${ch.accent}">Σ</div>
+        Key Formulas — tap to expand variables
+      </div>
+      ${cards}`;
+  } else {
+    formulasHTML = `
+      <div class="applied-box">
+        <div class="big-icon">💻</div>
+        <h3>Applied Chapter</h3>
+        <p>This chapter focuses on R implementation and worked examples.<br>
+           Theoretical formulas are in the corresponding theory chapter.</p>
+      </div>`;
+  }
+
+  content.innerHTML = `
+    <div class="ch-header" style="background:${ch.color};border-color:${ch.accent}30">
+      <div class="ch-header-deco" style="background:${ch.accent}"></div>
+      <div class="ch-header-top">
+        <span class="ch-icon">${ch.icon}</span>
+        <div>
+          <div class="ch-num-label" style="color:${ch.accent}">${ch.num} · ${ch.partLabel}</div>
+          <div class="ch-title">${ch.title}</div>
+        </div>
+      </div>
+      <p class="ch-summary">${ch.summary}</p>
+      ${noteHTML}
+    </div>
+
+    ${formulasHTML}
+
+    <div class="nav-bar">
+      <button class="nav-btn" onclick="goByOffset(-1)" ${activeIndex === 0 ? 'disabled' : ''}>← Prev</button>
+      <span class="nav-counter">${activeIndex + 1} / ${chapters.length}</span>
+      <button class="nav-btn" onclick="goByOffset(1)" ${activeIndex === chapters.length - 1 ? 'disabled' : ''}>Next →</button>
+    </div>`;
+}
+
+function toggleFormula(fi, accent) {
+  const btn  = document.getElementById(`fb-${fi}`);
+  const vars = document.getElementById(`fv-${fi}`);
+  const tog  = document.getElementById(`ft-${fi}`);
+  const open = vars.classList.contains('open');
+  vars.classList.toggle('open', !open);
+  btn.classList.toggle('open', !open);
+  tog.classList.toggle('open', !open);
+  if (!open) btn.style.borderColor = accent;
+  else       btn.style.borderColor = '#dde5f0';
+}
+
+function goByOffset(offset) {
+  const idx = chapters.findIndex(c => c.id === activeId);
+  const next = chapters[idx + offset];
+  if (next) goTo(next.id);
+}
+
+function goTo(id) {
+  if (!chapters.find(c => c.id === id)) return;
+  activeId = id;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function render() {
+  buildTabBar();
+  buildContent();
+}
+
+render();
+</script>
+</body>
+</html>
