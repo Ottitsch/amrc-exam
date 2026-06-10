@@ -685,11 +685,12 @@ const chapters = [
           {sym:"β = Σᵢ αᵢ gᵢ xᵢ", desc:"Weight vector is a linear combination of the training points — only those with αᵢ > 0 contribute"},
           {sym:"support vectors", desc:"The points with αᵢ > 0: on the margin (0 < αᵢ < C) or, when non-separable, inside/wrong side (αᵢ = C). β₀ is recovered from any margin SV via gᵢ(xᵢᵀβ+β₀)=1"},
         ]},
-      { label:"Kernel function", latex:"K(u,v) = ⟨h(u), h(v)⟩",
+      { label:"Kernel function & kernel trick", latex:"K(u,v) = ⟨h(u), h(v)⟩;   f(x) = Σᵢ αᵢ gᵢ ⟨h(x), h(xᵢ)⟩ + β₀",
         vars:[
           {sym:"u, v",   desc:"Two input observations (p-dimensional feature vectors) being compared"},
           {sym:"h(·)",   desc:"Implicit mapping to higher-dimensional space — never computed explicitly"},
           {sym:"K(u,v)", desc:"Kernel — computes the inner product ⟨h(u),h(v)⟩ in the transformed space directly"},
+          {sym:"f(x)",   desc:"The solution involves h only through inner products — that is the trick: replace every ⟨h(·),h(·)⟩ by K(·,·) and h never needs to be specified"},
         ]},
     ]
   },
@@ -790,8 +791,8 @@ const examQA = {
       a:"From the Karush-Kuhn-Tucker conditions the solution is β = Σᵢ αᵢ gᵢ xᵢ — a linear combination of the training points — with Σᵢ αᵢ gᵢ = 0 and αᵢ ≥ 0 (and αᵢ ≤ C in the non-separable case). Only the points with αᵢ > 0 contribute: these are the support vectors. They lie on the margin boundary (gᵢ(xᵢᵀβ+β₀)=1, with 0 < αᵢ < C) or, when not separable, on the wrong side (ξᵢ > 0, αᵢ = C). The intercept β₀ comes from any margin support vector via gᵢ(xᵢᵀβ+β₀) = 1; points outside the margin have αᵢ = 0.",
       asked:["4 Feb 2026"] },
     { q:"What is the kernel trick?",
-      formula:"K(u,v) = ⟨h(u), h(v)⟩",
-      a:"Map the data through h(x) into a higher-dimensional space where it is linearly separable. Both the dual optimisation problem and the solution f(x) involve h only through inner products, so we never compute h explicitly — we only need a kernel function K(u,v) = ⟨h(u),h(v)⟩ that returns the inner product in the transformed space directly.",
+      formula:"K(u,v) = ⟨h(u), h(v)⟩;   f(x) = Σᵢ αᵢ gᵢ ⟨h(x), h(xᵢ)⟩ + β₀",
+      a:"Map the data through h(x) into a higher-dimensional space where it is linearly separable. Both the dual optimisation problem and the solution f(x) = Σᵢ αᵢ gᵢ ⟨h(x), h(xᵢ)⟩ + β₀ involve h only through inner products — so we never compute h explicitly; we only need a kernel function K(u,v) = ⟨h(u),h(v)⟩ that returns the inner product in the transformed space directly, giving f(x) = Σᵢ αᵢ gᵢ K(x, xᵢ) + β₀.",
       asked:["26 Jan 2026"] },
   ],
 };
