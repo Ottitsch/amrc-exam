@@ -266,6 +266,19 @@ body {
   line-height: 1.55;
 }
 
+/* ── EXAM Q&A ── */
+.qa-question {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #0f1628;
+  line-height: 1.5;
+}
+.qa-answer {
+  font-size: 13.5px;
+  color: #333;
+  line-height: 1.6;
+}
+
 /* ── APPLIED CHAPTER ── */
 .applied-box {
   background: #fff;
@@ -621,6 +634,135 @@ const chapters = [
         ]},
     ]
   },
+  {
+    id:17, part:"V", partLabel:"Exam-prep lecture · Jan 2025", num:"Jan '25",
+    title:"Exam-Prep Lecture — Jan 2025",
+    color:"#eef0f5", accent:"#3a3a6a", icon:"📝",
+    summary:"Topics flagged in the January 2025 exam-preparation lecture (WS2024), via sueszli's collection. Tap a question to reveal a model answer with the key formula.",
+    qa:[
+      { q:"SVM: what is the optimisation problem in the separable and non-separable case? What's the outcome for β? (§13.2.1)",
+        formula:"sep: min ‖β‖ s.t. gᵢ(xᵢᵀβ+β₀)≥1;   non-sep: min ½‖β‖²+CΣξᵢ s.t. gᵢ(xᵢᵀβ+β₀)≥1−ξᵢ, ξᵢ≥0",
+        a:"Separable case: maximise the margin, i.e. min ‖β‖ such that every point is correctly classified at distance ≥ M = 1/‖β‖. Non-separable: add a slack ξᵢ ≥ 0 per point and a cost C penalising violations, min ½‖β‖² + CΣξᵢ. In both cases the KKT conditions give β = Σᵢ αᵢ gᵢ xᵢ — a linear combination of the support vectors (points with αᵢ > 0: on the margin if 0 < αᵢ < C, inside it if αᵢ = C). β₀ comes from any margin support vector." },
+      { q:"Regression trees: how to build them, the splitting criterion (p.89), how to split into two subregions, and how to prune.",
+        formula:"min_{j,s} [ min_{c₁} Σ_{xᵢ∈R₁}(yᵢ−c₁)² + min_{c₂} Σ_{xᵢ∈R₂}(yᵢ−c₂)² ]",
+        a:"Greedily choose the split variable j and split point s minimising the total within-region sum of squares, with R₁ = {xⱼ ≤ s}, R₂ = {xⱼ > s} and optimal constant ĉₘ = ave(yᵢ | xᵢ∈Rₘ). Recurse on each region, growing a large tree T₀ until a minimum node size is reached. Then prune with cost-complexity cα(T) = Σₘ nₘQₘ(T) + α|T|; the parameter α (chosen by cross-validation) trades tree size against fit." },
+      { q:"Smoothing splines: what are they, how do you find one, the criterion (7.1), the natural-cubic-spline solution, degrees of freedom and λ tuning.",
+        formula:"RSS(f,λ)=Σ{yᵢ−f(xᵢ)}²+λ∫f″(t)²dt;   f̂λ = N(NᵀN+λΩN)⁻¹Nᵀy = Sλy,   df(λ)=trace(Sλ)",
+        a:"Among all twice-differentiable functions, minimise the penalised RSS — first term measures fit, the second penalises curvature, λ trades them off (λ=0 interpolates, λ→∞ gives the linear LS fit). The unique minimiser is a natural cubic spline with knots at the data points: f(x) = Σⱼ Nⱼ(x)θⱼ with θ̂ = (NᵀN+λΩN)⁻¹Nᵀy. The fit is linear in y, f̂λ = Sλy, with effective df(λ) = trace(Sλ); choose λ (equivalently the df) by (generalised) cross-validation." },
+      { q:"Regularisation: difference between ridge and lasso — objective functions, constraints, why lasso gives exact zeros, advantages/disadvantages (Fig. 3.1).",
+        formula:"β̂Ridge = argmin{RSS + λΣβⱼ²};   β̂Lasso = argmin{RSS + λΣ|βⱼ|}",
+        a:"Both add a penalty to the RSS to stabilise estimation when XᵀX is near-singular. Ridge uses the L2 penalty λΣβⱼ² and has a closed form (XᵀX+λI)⁻¹Xᵀy — it shrinks all coefficients but never exactly to zero. Lasso uses the L1 penalty λΣ|βⱼ| (equivalently Σ|βⱼ| ≤ s) and has no closed-form solution (needs an iterative solver); its diamond-shaped constraint makes the RSS contours hit corners, driving some βⱼ to exactly zero — i.e. automatic variable selection (Fig. 3.1). Both require standardised inputs and leave the intercept unpenalised." },
+    ]
+  },
+  {
+    id:18, part:"V", partLabel:"Oral Exam · Feb 2025 (1st)", num:"Feb '25 ①",
+    title:"Oral Exam — Feb 2025 (first)",
+    color:"#eef0f5", accent:"#3a3a6a", icon:"📝",
+    summary:"Verbatim questions from the first February 2025 oral exam (WS2024), via sueszli's collection. Tap a question to reveal a model answer with the key formula.",
+    qa:[
+      { q:"AIC, BIC, and how they differentiate models for variable selection.",
+        formula:"AIC = −2 max log L + 2p;   BIC = −2 max log L + log(n)·p",
+        a:"Both penalise model complexity on top of the maximised log-likelihood; AIC's penalty is 2p, BIC's is log(n)·p. For n ≥ 8 BIC penalises more strongly and selects smaller models. AIC suits descriptive models, BIC predictive ones. Smaller value is better, but the absolute value is meaningless. Used to compare models in variable selection (forward/backward/both, best subset) — strictly valid for nested models." },
+      { q:"PCR and its relationship with ridge regression.",
+        formula:"Cov(X)=VAVᵀ, Z=XV;   ŷRidge = Σⱼ uⱼ · dⱼ²/(dⱼ²+λ) · uⱼᵀy",
+        a:"PCR regresses y on the first q principal components — the highest-variance directions of X from Cov(X)=VAVᵀ — discarding the p−q smallest-eigenvalue components entirely. Ridge regression also operates in the principal-component basis, but instead of discarding it shrinks each component's contribution by the factor dⱼ²/(dⱼ²+λ); lower-variance (small dⱼ²) components are shrunk most. So both rely on the principal components — PCR makes a hard cut, ridge applies a smooth shrinkage." },
+      { q:"Random forest — variable importance.",
+        formula:"θ̂ⱼ = (1/B) Σ_b δ_bⱼ,   δ_bⱼ = π_bⱼ − π_b",
+        a:"For each tree b, compute its impurity on the out-of-bag (OOB) data, π_b. Then randomly permute the values of predictor j in the OOB data and recompute the impurity, π_bⱼ. The increase δ_bⱼ = π_bⱼ − π_b measures how much accuracy depends on j. The overall variable importance is the average increase across all B trees, θ̂ⱼ — a large value marks an important variable." },
+      { q:"GAM: mathematically explain how the functions are obtained (the backfitting algorithm).",
+        formula:"g[μ(x)] = α + Σⱼ fⱼ(xⱼ);   f̂ⱼ ← Sⱼ[ yᵢ − α̂ − Σ_{k≠j} f̂ₖ(xᵢₖ) ]",
+        a:"A GAM models the conditional mean through a link g: g[μ(x)] = α + Σⱼ fⱼ(xⱼ), where each fⱼ is an unknown smooth (cubic-spline) function minimising the PRSS. The fⱼ are obtained by backfitting: initialise α̂ = ȳ and f̂ⱼ ≡ 0; then cycle j = 1,…,p, fitting each f̂ⱼ as a smoothing spline Sⱼ applied to the partial residuals yᵢ − α̂ − Σ_{k≠j} f̂ₖ(xᵢₖ), and re-centring f̂ⱼ to sum to zero. Repeat the cycles until all f̂ⱼ stabilise." },
+    ]
+  },
+  {
+    id:19, part:"V", partLabel:"Oral Exam · Feb 2025 (2nd)", num:"Feb '25 ②",
+    title:"Oral Exam — Feb 2025 (second)",
+    color:"#eef0f5", accent:"#3a3a6a", icon:"📝",
+    summary:"Verbatim questions from the second February 2025 oral exam (WS2024), via sueszli's collection. Tap a question to reveal a model answer with the key formula.",
+    qa:[
+      { q:"Partial Least Squares (PLS).",
+        formula:"wₖ = argmax Cov(y, Xw)  s.t. ‖wₖ‖=1, Cov(Xwₖ,Xwⱼ)=0 for j<k;   T = XW",
+        a:"PLS builds components T = XW that, unlike PCR, use the response y: each loading wₖ maximises the covariance Cov(y, Xw) subject to unit norm and being uncorrelated with the earlier components. It then regresses y on the scores (y = Tγ + ε̃, so β̃ = Wγ). Because it seeks directions that are both high-variance and highly correlated with y, PLS usually predicts better than PCR. Center (and optionally scale) X and y first." },
+      { q:"The LS singularity problem — what problem arises in statistical testing / inference?",
+        formula:"β̂=(XᵀX)⁻¹Xᵀy,   Cov(β̂)=σ²(XᵀX)⁻¹,   zⱼ = β̂ⱼ/(σ̂√dⱼ)",
+        a:"With highly correlated predictors XᵀX is nearly singular, so (XᵀX)⁻¹ has huge entries; β̂ is then numerically unstable and not uniquely defined. For inference specifically, Cov(β̂) = σ²(XᵀX)⁻¹ blows up, so the standard errors √dⱼ σ̂ become enormous and the t-tests zⱼ = β̂ⱼ/(σ̂√dⱼ) become unreliable — we may wrongly fail to reject H₀: βⱼ = 0. Remedies: derived inputs (PCR, PLS) or shrinkage (ridge, lasso)." },
+      { q:"LDA — what is the base (foundation)?",
+        formula:"P(G=k|x) = hₖ(x)πₖ / Σₗ hₗ(x)πₗ;   δₖ(x) = xᵀΣ⁻¹μₖ − ½μₖᵀΣ⁻¹μₖ + log πₖ",
+        a:"LDA is founded on Bayes' theorem: the posterior P(G=k|x) ∝ hₖ(x)πₖ, combining prior πₖ with the class-conditional density hₖ. Assume each hₖ is multivariate Gaussian with a common covariance Σ across classes. Taking log-ratios, the quadratic terms in x cancel, leaving a discriminant δₖ(x) that is linear in x; classify x to argmax_k δₖ(x). Parameters π̂ₖ = nₖ/n, μ̂ₖ and the pooled Σ̂ are estimated from the training data." },
+      { q:"Smoothing splines.",
+        formula:"RSS(f,λ) = Σ{yᵢ−f(xᵢ)}² + λ∫f″(t)²dt;   θ̂ = (NᵀN + λΩN)⁻¹Nᵀy",
+        a:"Among all twice-differentiable functions, find the one minimising the penalised RSS — first term measures closeness to the data, the second penalises curvature, λ trades them off (λ=0 interpolates, λ→∞ gives the linear LS fit). The minimiser is a natural cubic spline with knots at the xᵢ, with solution θ̂ (a generalised ridge regression). The effective degrees of freedom df(λ) = trace(Sλ) are selected by cross-validation." },
+      { q:"SVM, non-separable case: what has to be minimised?",
+        formula:"min ½‖β‖² + C Σᵢ ξᵢ   s.t.  gᵢ(xᵢᵀβ + β₀) ≥ 1 − ξᵢ,  ξᵢ ≥ 0",
+        a:"When the classes overlap, introduce a slack variable ξᵢ ≥ 0 for each point (how far it lies on the wrong side of its margin) and minimise ½‖β‖² + CΣξᵢ subject to gᵢ(xᵢᵀβ + β₀) ≥ 1 − ξᵢ. The cost C tunes the trade-off: large C → narrow margin with few violations (risk of overfitting), small C → wider, smoother margin. ξᵢ > 1 means xᵢ is misclassified. Solving via Lagrange/KKT gives β = Σᵢ αᵢ gᵢ xᵢ with 0 ≤ αᵢ ≤ C." },
+    ]
+  },
+  {
+    id:20, part:"V", partLabel:"Oral Exam · 26 Jan 2026", num:"26 Jan",
+    title:"Oral Exam — 26 Jan 2026",
+    color:"#eef0f5", accent:"#3a3a6a", icon:"📝",
+    summary:"Verbatim questions from the oral exam on 2026-01-26 (WS2025), sourced from VoWi. Tap a question to reveal a model answer with the key formula.",
+    qa:[
+      { q:"Classification trees: how can we avoid overfitting?",
+        formula:"cα(T) = Σₘ nₘ Qₘ(T) + α|T|",
+        a:"Grow a large tree T₀ (stop at a minimum node size), then prune it back with cost-complexity pruning by minimising cα(T). |T| is the number of terminal nodes and α ≥ 0 trades tree size against fit: α = 0 keeps the full tree, large α gives a small tree. The optimal α is chosen by cross-validation. For classification the node impurity Qₘ uses the Gini index or cross-entropy. Larger α → smaller tree → less overfitting." },
+      { q:"Linear discriminant analysis and its parameters.",
+        formula:"δₖ(x) = xᵀΣ⁻¹μₖ − ½μₖᵀΣ⁻¹μₖ + log πₖ",
+        a:"LDA assumes each class is Gaussian with a common (pooled) covariance Σ. Classify x to argmax_k δₖ(x). Parameters estimated from the training data: priors π̂ₖ = nₖ/n, class means μ̂ₖ, and the pooled covariance Σ̂ = (1/(n−K)) Σₖ Σ_{gᵢ=k}(xᵢ−μ̂ₖ)(xᵢ−μ̂ₖ)ᵀ. The discriminant is linear in x precisely because all classes share the same Σ." },
+      { q:"Multicollinearity in regression.",
+        formula:"β̂ = (XᵀX)⁻¹Xᵀy,   Cov(β̂) = σ²(XᵀX)⁻¹",
+        a:"When predictors are highly correlated XᵀX becomes nearly singular, so (XᵀX)⁻¹ has very large entries. The LS estimator is then numerically unstable, its variance σ²(XᵀX)⁻¹ blows up, and the t-tests zⱼ = β̂ⱼ/(σ̂√dⱼ) become unreliable; the coefficients are no longer uniquely defined. Remedies: variable selection, derived inputs (PCR, PLS), or shrinkage — Ridge adds λI to the diagonal to make it nonsingular, Lasso also sets coefficients to zero." },
+      { q:"Smoothing splines.",
+        formula:"RSS(f,λ) = Σᵢ{yᵢ−f(xᵢ)}² + λ∫f″(t)²dt;   θ̂ = (NᵀN + λΩN)⁻¹Nᵀy",
+        a:"Among all functions with two continuous derivatives, find the one minimising the penalised RSS: first term measures fit, the second penalises curvature, and λ trades them off (λ = 0 interpolates, λ → ∞ gives the linear LS fit). The unique minimiser is a natural cubic spline with knots at the xᵢ, with solution θ̂ (a generalised ridge regression). The effective degrees of freedom df(λ) = trace(Sλ) are chosen by (generalised) cross-validation." },
+      { q:"SVM and the kernel trick.",
+        formula:"f(x) = Σᵢ αᵢ gᵢ ⟨h(x), h(xᵢ)⟩ + β₀,   K(u,v) = ⟨h(u), h(v)⟩",
+        a:"An SVM finds the maximum-margin separating hyperplane f(x) = β₀ + βᵀx. The kernel trick maps the data through h(x) into a higher-dimensional space where it is linearly separable. Both the dual optimisation problem and the solution f(x) involve h only through inner products, so we never compute h explicitly — we only need a kernel K(u,v) = ⟨h(u),h(v)⟩. Common kernels: linear uᵀv, polynomial (c₀+γ⟨u,v⟩)^d, and RBF exp(−γ‖u−v‖²)." },
+    ]
+  },
+  {
+    id:21, part:"V", partLabel:"Oral Exam · 1 Feb 2026", num:"1 Feb",
+    title:"Oral Exam — 1 Feb 2026",
+    color:"#eef0f5", accent:"#3a3a6a", icon:"📝",
+    summary:"Verbatim questions from the oral exam on 2026-02-01 (WS2025), sourced from VoWi. Tap a question to reveal a model answer with the key formula.",
+    qa:[
+      { q:"What is \"statistical inference\"? Give an example in the context of linear regression.",
+        formula:"zⱼ = β̂ⱼ / (σ̂ √dⱼ) ~ tₙ₋ₚ₋₁",
+        a:"Statistical inference means drawing conclusions about unknown population parameters from sample data, treating the errors (and hence y) as random variables — building confidence intervals and performing hypothesis tests. It needs the distributional assumption ε ~ N(0, σ²I). Example: testing H₀: βⱼ = 0 with the statistic zⱼ, which under H₀ follows tₙ₋ₚ₋₁; a large |zⱼ| rejects H₀, i.e. predictor j contributes significantly. Equivalently, the 1−α confidence interval β̂ⱼ ± z₁₋α/₂ √dⱼ σ̂." },
+      { q:"What are principal components? How can they be used for regression?",
+        formula:"Cov(X) = VAVᵀ, Z = XV;   θ̂₁:q = (Z₁:qᵀZ₁:q)⁻¹Z₁:qᵀy,   β̃ = V₁:q θ̂₁:q",
+        a:"Principal components are uncorrelated linear combinations Z = XV of the predictors, ordered by variance, obtained from the spectral decomposition Cov(X) = VAVᵀ (V holds the eigenvectors, A = diag(a₁ ≥ … ≥ aₚ) the variances). PCR regresses y on the first q (highest-variance) components, giving θ̂₁:q, then back-transforms to the original space with β̃. This handles correlated predictors and the p > n case by discarding low-variance directions. Center and scale X first, since PCA is not scale invariant." },
+      { q:"Define & explain the cost-complexity (penalised) criterion for smoothing splines. What is the solution?",
+        formula:"RSS(f,λ) = (y−Nθ)ᵀ(y−Nθ) + λθᵀΩN θ;   θ̂ = (NᵀN + λΩN)⁻¹Nᵀy",
+        a:"The penalised criterion is Σ(yᵢ−f(xᵢ))² + λ∫f″(t)²dt, which in matrix form becomes the expression above with {N}ᵢⱼ = Nⱼ(xᵢ) and {ΩN}ⱼₖ = ∫Nⱼ″(t)Nₖ″(t)dt. The first term measures closeness to the data, the second penalises curvature, and λ balances them. The solution θ̂ is a generalised ridge regression; the fit is f̂λ = Sλy with effective degrees of freedom df = trace(Sλ)." },
+      { q:"SVMs, 2-group classification. Formulate (math) the optimisation problem for the separable case. Explain it in words.",
+        formula:"min_{β,β₀} ‖β‖   s.t.  gᵢ(xᵢᵀβ + β₀) ≥ 1,  i = 1,…,n",
+        a:"The original problem is max_{‖β‖=1} M subject to gᵢ(xᵢᵀβ + β₀) ≥ M for all i. Setting M = 1/‖β‖ gives the equivalent convex form above. In words: find the hyperplane that maximises the margin (the band of width 2M containing no points) such that every observation lies on the correct side at distance at least M. Here gᵢ ∈ {−1,+1} is the class label; minimising ‖β‖ maximises the margin M = 1/‖β‖." },
+    ]
+  },
+  {
+    id:22, part:"V", partLabel:"Oral Exam · 4 Feb 2026", num:"4 Feb",
+    title:"Oral Exam — 4 Feb 2026",
+    color:"#eef0f5", accent:"#3a3a6a", icon:"📝",
+    summary:"Verbatim questions from the oral exam on 2026-02-04 (WS2025), sourced from VoWi. Tap a question to reveal a model answer with the key formula.",
+    qa:[
+      { q:"Parameter estimation in regression: how do we obtain the degrees of freedom (df)? Derive the df for ridge regression.",
+        formula:"df(λ) = trace(X(XᵀX + λI)⁻¹Xᵀ) = Σⱼ dⱼ²/(dⱼ²+λ)",
+        a:"The effective df is the trace of the matrix mapping y to ŷ. For OLS ŷ = Hy with H = X(XᵀX)⁻¹Xᵀ, so df = trace(H) = p. For ridge ŷ = X(XᵀX+λI)⁻¹Xᵀy, hence df(λ) = trace(X(XᵀX+λI)⁻¹Xᵀ). Limits confirm it: λ = 0 → trace(Iₚ) = p; λ → ∞ → df → 0. Using the SVD X = UDVᵀ, this simplifies to Σⱼ dⱼ²/(dⱼ²+λ), the sum of the ridge shrinkage factors." },
+      { q:"Difference between AIC and BIC. When to use which?",
+        formula:"AIC = −2 max log L + 2p;   BIC = −2 max log L + log(n)·p",
+        a:"Both have the form −2 max log L + penalty·p; AIC's penalty is 2p, BIC's is log(n)·p. With σ² known, AIC = RSS/σ² + 2p and BIC = RSS/σ² + log(n)p; with σ² unknown, AIC = n·log(RSS/n) + 2p. For n ≥ 8 (more than e² ≈ 7.3 observations) BIC penalises more strongly and gives smaller models. Rule of thumb: AIC for descriptive models, BIC for predictive models. Select the model with the smallest value; the absolute values are not interpretable." },
+      { q:"Difference in the objective function of PCR and PLS.",
+        formula:"PCR: wₖ = argmax Var(Xw)    vs.    PLS: wₖ = argmax Cov(y, Xw)",
+        a:"PCR's directions maximise the variance of X alone (the eigenvectors of Cov(X)) and ignore the response y. PLS's directions instead maximise the covariance with y, subject to ‖wₖ‖ = 1 and Cov(Xwₖ, Xwⱼ) = 0 for j < k. So PLS uses y when building its components, finding directions that are both high-variance and correlated with the response — which usually gives better prediction than PCR. Both are special cases of continuum regression (controlled by δ)." },
+      { q:"Formulate the splitting criterion for regression trees & classification trees.",
+        formula:"min_{j,s} [ min_{c₁} Σ_{xᵢ∈R₁}(yᵢ−c₁)² + min_{c₂} Σ_{xᵢ∈R₂}(yᵢ−c₂)² ]",
+        a:"Regression: choose the split variable j and split point s minimising the expression above, with R₁ = {xⱼ ≤ s}, R₂ = {xⱼ > s}; the inner optima are ĉₘ = ave(yᵢ | xᵢ∈Rₘ). Classification: split to most reduce node impurity Qₘ(T) — Gini index Σₖ p̂ₘₖ(1−p̂ₘₖ), or cross-entropy −Σₖ p̂ₘₖ log p̂ₘₖ (both differentiable, hence preferred), or misclassification error 1 − p̂ₘₖ₍ₘ₎." },
+      { q:"SVM: f(x) = β₀ + βᵀx = 0. Give the solution for β. What are support vectors?",
+        formula:"β = Σᵢ αᵢ gᵢ xᵢ,   Σᵢ αᵢ gᵢ = 0,   0 ≤ αᵢ (≤ C)",
+        a:"From the Karush-Kuhn-Tucker conditions the solution is β = Σᵢ αᵢ gᵢ xᵢ — a linear combination of the training points — with Σᵢ αᵢ gᵢ = 0 and αᵢ ≥ 0 (and αᵢ ≤ C in the non-separable case). Only the points with αᵢ > 0 contribute: these are the support vectors. They lie on the margin boundary (gᵢ(xᵢᵀβ+β₀)=1, with 0 < αᵢ < C) or, when not separable, on the wrong side (ξᵢ > 0, αᵢ = C). The intercept β₀ comes from any margin support vector via gᵢ(xᵢᵀβ+β₀) = 1; points outside the margin have αᵢ = 0 and don't affect β." },
+    ]
+  },
 ];
 
 const partMeta = {
@@ -628,6 +770,7 @@ const partMeta = {
   "II":  { bg:"#a85c00", label:"Part II" },
   "III": { bg:"#a02020", label:"Part III" },
   "IV":  { bg:"#1a4a9a", label:"Part IV" },
+  "V":   { bg:"#3a3a6a", label:"Exam" },
 };
 
 let activeId = 1;
@@ -636,7 +779,7 @@ let activeId = 1;
 function buildTabBar() {
   const bar = document.getElementById('tabbar');
   bar.innerHTML = '';
-  ['I','II','III','IV'].forEach(part => {
+  ['I','II','III','IV','V'].forEach(part => {
     const group = document.createElement('div');
     group.className = 'part-group';
 
@@ -678,7 +821,30 @@ function buildContent() {
     : '';
 
   let formulasHTML = '';
-  if (ch.formulas.length > 0) {
+  if (ch.qa) {
+    const cards = ch.qa.map((item, fi) => `
+      <div class="formula-card">
+        <button class="formula-btn" id="fb-${fi}" onclick="toggleFormula(${fi},'${ch.accent}')" style="--acc:${ch.accent}">
+          <div class="formula-btn-top">
+            <span class="formula-label-text" style="color:${ch.accent}">Q${fi + 1}</span>
+            <span class="formula-toggle" id="ft-${fi}">▼</span>
+          </div>
+          <div class="qa-question">${item.q}</div>
+        </button>
+        <div class="formula-vars" id="fv-${fi}" style="--acc:${ch.accent}">
+          ${item.formula ? `<div class="formula-math" style="margin-bottom:10px">${item.formula}</div>` : ''}
+          <div class="vars-heading">Answer</div>
+          <div class="qa-answer">${item.a}</div>
+        </div>
+      </div>`).join('');
+
+    formulasHTML = `
+      <div class="formulas-heading">
+        <div class="sigma-badge" style="background:${ch.accent}">?</div>
+        Exam Questions — tap to reveal the answer
+      </div>
+      ${cards}`;
+  } else if (ch.formulas.length > 0) {
     const cards = ch.formulas.map((f, fi) => `
       <div class="formula-card">
         <button class="formula-btn" id="fb-${fi}" onclick="toggleFormula(${fi},'${ch.accent}')" style="--acc:${ch.accent}">
