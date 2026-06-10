@@ -388,6 +388,12 @@ const chapters = [
           {sym:"dⱼ",  desc:"j-th diagonal element of (XᵀX)⁻¹ — scales the standard error of β̂ⱼ"},
           {sym:"zⱼ",  desc:"Test statistic; under H₀ distributed as tₙ₋ₚ₋₁"},
         ]},
+      { label:"Distribution of the LS estimator", latex:"β̂ ~ Nₚ₊₁(β, σ²(XᵀX)⁻¹)",
+        vars:[
+          {sym:"β",            desc:"True (unknown) coefficient vector — β̂ is unbiased: E(β̂) = β"},
+          {sym:"σ²(XᵀX)⁻¹",   desc:"Covariance matrix of β̂ — its diagonal gives the squared standard errors; blows up when XᵀX is near-singular (correlated predictors)"},
+          {sym:"σ²",           desc:"Residual variance, estimated by σ̂² = RSS/(n−p−1)"},
+        ]},
     ]
   },
   {
@@ -453,6 +459,13 @@ const chapters = [
           {sym:"λ",        desc:"Tuning parameter — increasing λ progressively zeros out more coefficients"},
           {sym:"s",        desc:"Equivalent form: Σ|βⱼ| ≤ s — directly bounds total coefficient magnitude"},
         ]},
+      { label:"Ridge via SVD — shrinkage & degrees of freedom", latex:"ŷRidge = Σⱼ uⱼ [dⱼ²/(dⱼ²+λ)] uⱼᵀy,   df(λ) = trace(X(XᵀX+λI)⁻¹Xᵀ) = Σⱼ dⱼ²/(dⱼ²+λ)",
+        vars:[
+          {sym:"uⱼ",            desc:"j-th left singular vector of X (from the SVD X = UDVᵀ) — the j-th principal-component direction"},
+          {sym:"dⱼ",            desc:"j-th singular value of X; dⱼ² is proportional to the variance of principal component j"},
+          {sym:"dⱼ²/(dⱼ²+λ)",  desc:"Shrinkage factor ∈ (0,1] — ridge shrinks each component by this; low-variance (small dⱼ²) directions are shrunk most, vs PCR which discards them entirely"},
+          {sym:"df(λ)",         desc:"Effective degrees of freedom; λ=0 → p, λ→∞ → 0"},
+        ]},
       { label:"PCR — spectral decomposition (p. 18)", latex:"Cov(X) = VAVᵀ,   Z = XV",
         vars:[
           {sym:"V",   desc:"p × p matrix of eigenvectors of Cov(X) — each column vᵢ is a principal component direction"},
@@ -488,6 +501,13 @@ const chapters = [
     color:"#fff0f0", accent:"#a02020", icon:"🎯",
     summary:"Assigns observations to classes using linear decision boundaries. LDA assumes Gaussian classes with equal covariance; QDA relaxes that; logistic regression models class probabilities directly.",
     formulas:[
+      { label:"Bayes classification rule (posterior)", latex:"P(G=k|x) = hₖ(x)πₖ / Σₗ hₗ(x)πₗ",
+        vars:[
+          {sym:"P(G=k|x)",      desc:"Posterior probability that x belongs to class k; classify x to the class with the largest posterior"},
+          {sym:"hₖ(x)",         desc:"Class-conditional density (likelihood) of x in class k — in LDA/QDA assumed multivariate Gaussian φₖ"},
+          {sym:"πₖ",            desc:"Prior probability of class k, estimated as nₖ/n"},
+          {sym:"Σₗ hₗ(x)πₗ",   desc:"Normalising constant (total probability) — makes the posteriors sum to 1"},
+        ]},
       { label:"LDA linear discriminant function", latex:"δₖ(x) = xᵀΣ⁻¹μₖ − ½μₖᵀΣ⁻¹μₖ + log πₖ",
         vars:[
           {sym:"x",      desc:"New observation (p-dimensional feature vector) to classify"},
@@ -556,6 +576,12 @@ const chapters = [
           {sym:"ΩN", desc:"Roughness penalty matrix: {ΩN}ⱼₖ = ∫Nⱼ″(t)Nₖ″(t)dt"},
           {sym:"θ̂", desc:"Spline coefficients — analogous to Ridge regression with penalty matrix λΩN"},
         ]},
+      { label:"Smoother matrix & effective degrees of freedom", latex:"f̂λ = Sλy,   df(λ) = trace(Sλ)",
+        vars:[
+          {sym:"Sλ",     desc:"Smoother matrix Sλ = N(NᵀN+λΩN)⁻¹Nᵀ — depends only on the xᵢ and λ, not on y; the fit is linear in y"},
+          {sym:"f̂λ",    desc:"Vector of fitted values for the chosen λ"},
+          {sym:"df(λ)",  desc:"Effective degrees of freedom = trace(Sλ); used to set λ (e.g. by generalised cross-validation)"},
+        ]},
     ]
   },
   {
@@ -576,6 +602,12 @@ const chapters = [
         vars:[
           {sym:"λⱼ",              desc:"Per-predictor smoothing parameter — controls how wiggly fⱼ can be"},
           {sym:"∫[fⱼ″(tⱼ)]² dtⱼ", desc:"Roughness of fⱼ — penalises non-linearity for predictor j independently"},
+        ]},
+      { label:"Backfitting update", latex:"f̂ⱼ ← Sⱼ[ yᵢ − α̂ − Σ_{k≠j} f̂ₖ(xᵢₖ) ],   α̂ = ave(yᵢ)",
+        vars:[
+          {sym:"Sⱼ",                       desc:"Cubic smoothing-spline smoother for predictor j"},
+          {sym:"yᵢ − α̂ − Σ_{k≠j} f̂ₖ(xᵢₖ)", desc:"Partial residuals — the part of y not yet explained by the other functions; f̂ⱼ is fitted to these, cycling j=1,…,p until the f̂ⱼ stabilise"},
+          {sym:"α̂",                        desc:"Intercept, the overall mean ave(yᵢ); each f̂ⱼ is re-centred to sum to zero"},
         ]},
     ]
   },
@@ -605,6 +637,12 @@ const chapters = [
           {sym:"p̂ₘₖ",     desc:"Proportion of class k observations in node m"},
           {sym:"Gini = 0",  desc:"Pure node — all observations belong to one class"},
           {sym:"Gini → max", desc:"Impure node — classes equally distributed; max = 1 − 1/K"},
+        ]},
+      { label:"Other impurity measures (classification)", latex:"Entropy = −Σₖ p̂ₘₖ log p̂ₘₖ,   Misclass. = 1 − p̂ₘₖ₍ₘ₎",
+        vars:[
+          {sym:"p̂ₘₖ",      desc:"Proportion of class k observations in node m"},
+          {sym:"k(m)",      desc:"Majority class in node m, k(m) = argmaxₖ p̂ₘₖ; misclassification error is 1 minus its proportion"},
+          {sym:"Entropy",   desc:"Cross-entropy / deviance — like Gini it is differentiable, so preferred over misclassification when growing the tree"},
         ]},
       { label:"Random Forest variable importance", latex:"θ̂ⱼ = (1/B) Σ_b δ_bⱼ,   δ_bⱼ = π_bⱼ − π_b",
         vars:[
@@ -641,12 +679,23 @@ const chapters = [
           {sym:"C > 0",   desc:"Cost parameter: large C → narrow margin; small C → wide margin"},
           {sym:"Σξᵢ",     desc:"Total constraint violation; ξᵢ > 1 means observation i is misclassified"},
         ]},
+      { label:"Solution & support vectors (KKT)", latex:"β = Σᵢ αᵢ gᵢ xᵢ,   Σᵢ αᵢ gᵢ = 0,   0 ≤ αᵢ ≤ C;   f(x) = Σᵢ αᵢ gᵢ⟨x,xᵢ⟩ + β₀",
+        vars:[
+          {sym:"αᵢ",              desc:"Lagrange multipliers from the KKT conditions; 0 ≤ αᵢ ≤ C (separable case: C = ∞)"},
+          {sym:"β = Σᵢ αᵢ gᵢ xᵢ", desc:"Weight vector is a linear combination of the training points — only those with αᵢ > 0 contribute"},
+          {sym:"support vectors", desc:"The points with αᵢ > 0: on the margin (0 < αᵢ < C) or, when non-separable, inside/wrong side (αᵢ = C). β₀ is recovered from any margin SV via gᵢ(xᵢᵀβ+β₀)=1"},
+        ]},
       { label:"Kernel function", latex:"K(u,v) = ⟨h(u), h(v)⟩",
         vars:[
-          {sym:"h(·)",       desc:"Implicit mapping to higher-dimensional space — never computed explicitly"},
-          {sym:"K(u,v)",     desc:"Computes the inner product in the transformed space efficiently"},
-          {sym:"RBF kernel",  desc:"K(u,v) = exp(−γ‖u−v‖²);  γ > 0 controls how fast similarity decays"},
-          {sym:"Poly kernel", desc:"K(u,v) = (c₀ + γ⟨u,v⟩)^d;  d = degree, c₀ and γ are parameters"},
+          {sym:"u, v",   desc:"Two input observations (p-dimensional feature vectors) being compared"},
+          {sym:"h(·)",   desc:"Implicit mapping to higher-dimensional space — never computed explicitly"},
+          {sym:"K(u,v)", desc:"Kernel — computes the inner product ⟨h(u),h(v)⟩ in the transformed space directly"},
+        ]},
+      { label:"Common kernels", latex:"linear: uᵀv;   poly: (c₀ + γ⟨u,v⟩)^d;   RBF: exp(−γ‖u−v‖²)",
+        vars:[
+          {sym:"γ > 0", desc:"Scale parameter — in the RBF kernel it controls how fast similarity decays with distance"},
+          {sym:"c₀",    desc:"Constant offset in the polynomial kernel"},
+          {sym:"d",     desc:"Degree of the polynomial kernel"},
         ]},
     ]
   },
