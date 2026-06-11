@@ -35,7 +35,34 @@ body {
   color: #fff;
   letter-spacing: -0.3px;
   line-height: 1.2;
+}
+#topbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 10px;
+}
+#exam-toggle {
+  flex-shrink: 0;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  background: transparent;
+  color: #ccd8e8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+#exam-toggle.on {
+  background: #f5b942;
+  border-color: #f5b942;
+  color: #0f1628;
 }
 
 /* ── TAB BAR ── */
@@ -346,7 +373,10 @@ body {
 
 <div id="topbar">
   <div class="sub">TU Wien · Prof. Dr. Peter Filzmoser</div>
-  <h1>AMRC — Visual Chapter Guide</h1>
+  <div id="topbar-row">
+    <h1>AMRC — Visual Chapter Guide</h1>
+    <button id="exam-toggle" onclick="toggleExamMode()" title="Show only formulas that appear in past exam questions">🎯 Exam mode</button>
+  </div>
   <div id="tabbar"></div>
 </div>
 
@@ -798,6 +828,32 @@ const examQA = {
 };
 
 let activeId = 1;
+let examMode = false;
+
+// ── Exam mode ──────────────────────────────────────────────────
+// A formula card is "exam-relevant" if its latex appears (ignoring
+// whitespace) in a past exam question or its formula line for that
+// chapter — the examQA formula strings are kept verbatim-aligned
+// with the chapter cards, so substring matching is reliable.
+const stripWS = s => (s || '').replace(/\s+/g, '');
+
+function isExamFormula(chId, latex) {
+  const qa = examQA[chId] || [];
+  const cardLatex = stripWS(latex);
+  return qa.some(item => {
+    const segments = (item.formula ? item.formula.split(';') : []).concat(item.q || '');
+    return segments.some(seg => {
+      const s = stripWS(seg);
+      return s.length > 5 && (cardLatex.includes(s) || s.includes(cardLatex));
+    });
+  });
+}
+
+function toggleExamMode() {
+  examMode = !examMode;
+  document.getElementById('exam-toggle').classList.toggle('on', examMode);
+  buildContent();
+}
 
 // ── Build tab bar ──────────────────────────────────────────────
 function buildTabBar() {
@@ -844,9 +900,13 @@ function buildContent() {
        </div>`
     : '';
 
+  const visibleFormulas = examMode
+    ? ch.formulas.filter(f => isExamFormula(ch.id, f.latex))
+    : ch.formulas;
+
   let formulasHTML = '';
-  if (ch.formulas.length > 0) {
-    const cards = ch.formulas.map((f, fi) => `
+  if (visibleFormulas.length > 0) {
+    const cards = visibleFormulas.map((f, fi) => `
       <div class="formula-card">
         <button class="formula-btn" id="fb-${fi}" onclick="toggleFormula(${fi},'${ch.accent}')" style="--acc:${ch.accent}">
           <div class="formula-btn-top">
@@ -865,12 +925,23 @@ function buildContent() {
         </div>
       </div>`).join('');
 
+    const heading = examMode
+      ? `Exam Formulas — ${visibleFormulas.length} of ${ch.formulas.length} shown`
+      : 'Key Formulas — tap to expand variables';
     formulasHTML = `
       <div class="formulas-heading">
-        <div class="sigma-badge" style="background:${ch.accent}">Σ</div>
-        Key Formulas — tap to expand variables
+        <div class="sigma-badge" style="background:${examMode ? '#c98f1b' : ch.accent}">Σ</div>
+        ${heading}
       </div>
       ${cards}`;
+  } else if (examMode && ch.formulas.length > 0) {
+    formulasHTML = `
+      <div class="applied-box">
+        <div class="big-icon">🎯</div>
+        <h3>No exam formulas here</h3>
+        <p>None of this chapter's formulas appear in a recorded exam question.<br>
+           Switch off exam mode to see all formulas.</p>
+      </div>`;
   } else {
     formulasHTML = `
       <div class="applied-box">
@@ -885,7 +956,7 @@ function buildContent() {
   let examHTML = '';
   const qa = examQA[ch.id];
   if (qa && qa.length > 0) {
-    const offset = (ch.formulas ? ch.formulas.length : 0);
+    const offset = visibleFormulas.length;
     const cards = qa.map((item, qi) => {
       const fi = offset + qi;
       const tags = (item.asked || []).map(d =>
