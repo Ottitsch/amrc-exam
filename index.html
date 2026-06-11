@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AMRC — Visual Chapter Guide</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -245,7 +247,7 @@ body {
 .formula-toggle.open { transform: rotate(180deg); }
 .formula-math {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 15px;
+  font-size: 13px;
   color: #0f1628;
   background: #f4f6fa;
   border-radius: 7px;
@@ -254,6 +256,11 @@ body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+.formula-math .katex-display {
+  margin: 0;
+  text-align: left;
+}
+.formula-math .katex { font-size: 1.15em; }
 
 .formula-vars {
   border: 1.5px solid var(--acc);
@@ -390,7 +397,7 @@ const chapters = [
     color:"#e8f4f8", accent:"#1a6b8a", icon:"📐",
     summary:"Describes a response variable y as a linear combination of input predictors. The unknown coefficients are estimated by minimising the sum of squared residuals.",
     formulas:[
-      { label:"The linear model", latex:"y = β₀ + x₁β₁ + … + xₚβₚ + ε",
+      { label:"The linear model", latex:String.raw`y = \beta_0 + x_1\beta_1 + \cdots + x_p\beta_p + \varepsilon`,
         vars:[
           {sym:"y",         desc:"Response (output) variable — what you want to predict"},
           {sym:"β₀",        desc:"Intercept — the predicted value when all xⱼ = 0"},
@@ -398,7 +405,7 @@ const chapters = [
           {sym:"xⱼ",        desc:"The j-th predictor (input) variable, j = 1, …, p"},
           {sym:"ε",         desc:"Error term — assumed εᵢ ~ N(0, σ²), i.e. normally distributed noise"},
         ]},
-      { label:"Least-squares estimator (OLS)", latex:"β̂ = (XᵀX)⁻¹ Xᵀy",
+      { label:"Least-squares estimator (OLS)", latex:String.raw`\hat{\beta} = (X^\top X)^{-1} X^\top y`,
         vars:[
           {sym:"β̂",        desc:"Vector of estimated coefficients (β̂₀, β̂₁, …, β̂ₚ)"},
           {sym:"X",         desc:"Design matrix — n × (p+1) matrix whose rows are observations (1, xᵢ₁, …, xᵢₚ)"},
@@ -406,19 +413,19 @@ const chapters = [
           {sym:"(XᵀX)⁻¹",  desc:"Inverse of the Gram matrix — exists only when X has full column rank"},
           {sym:"y",         desc:"n-vector of observed response values (y₁, …, yₙ)"},
         ]},
-      { label:"Hat matrix (fitted values)", latex:"ŷ = Hy,   H = X(XᵀX)⁻¹Xᵀ",
+      { label:"Hat matrix (fitted values)", latex:String.raw`\hat{y} = Hy,\quad H = X(X^\top X)^{-1} X^\top`,
         vars:[
           {sym:"ŷ", desc:"Vector of fitted (predicted) values"},
           {sym:"H", desc:"Hat matrix — projects y onto the column space of X; 'puts the hat on y'"},
         ]},
-      { label:"t-statistic for testing βⱼ = 0", latex:"zⱼ = β̂ⱼ / (σ̂ √dⱼ),   under H₀: zⱼ ~ tₙ₋ₚ₋₁",
+      { label:"t-statistic for testing βⱼ = 0", latex:String.raw`z_j = \frac{\hat{\beta}_j}{\hat{\sigma}\sqrt{d_j}},\quad \text{under } H_0:\ z_j \sim t_{n-p-1}`,
         vars:[
           {sym:"β̂ⱼ", desc:"Estimated coefficient for predictor j"},
           {sym:"σ̂",  desc:"Estimated residual standard deviation: σ̂² = RSS/(n−p−1)"},
           {sym:"dⱼ",  desc:"j-th diagonal element of (XᵀX)⁻¹ — scales the standard error of β̂ⱼ"},
           {sym:"zⱼ",  desc:"Test statistic; under H₀ distributed as tₙ₋ₚ₋₁"},
         ]},
-      { label:"Distribution of the LS estimator", latex:"β̂ ~ Nₚ₊₁(β, σ²(XᵀX)⁻¹)",
+      { label:"Distribution of the LS estimator", latex:String.raw`\hat{\beta} \sim N_{p+1}\big(\beta,\ \sigma^2 (X^\top X)^{-1}\big)`,
         vars:[
           {sym:"β",            desc:"True (unknown) coefficient vector — β̂ is unbiased: E(β̂) = β"},
           {sym:"σ²(XᵀX)⁻¹",   desc:"Covariance matrix of β̂ — its diagonal gives the squared standard errors; blows up when XᵀX is near-singular (correlated predictors)"},
@@ -432,7 +439,7 @@ const chapters = [
     color:"#f0f8ee", accent:"#2d7a3a", icon:"⚖️",
     summary:"Provides tools to choose among competing models: F-tests compare nested models, information criteria (AIC, BIC) balance fit vs. complexity, and resampling methods estimate prediction error.",
     formulas:[
-      { label:"F-statistic (nested models)", latex:"F = [(RSS₀ − RSS₁)/(p₁−p₀)] / [RSS₁/(n−p₁−1)]",
+      { label:"F-statistic (nested models)", latex:String.raw`F = \frac{(\mathrm{RSS}_0 - \mathrm{RSS}_1)/(p_1 - p_0)}{\mathrm{RSS}_1/(n - p_1 - 1)}`,
         vars:[
           {sym:"RSS₀",    desc:"Residual sum of squares of the smaller model M₀ (with p₀ predictors)"},
           {sym:"RSS₁",    desc:"Residual sum of squares of the larger model M₁ (with p₁ predictors)"},
@@ -440,25 +447,25 @@ const chapters = [
           {sym:"n",        desc:"Total number of observations"},
           {sym:"F",        desc:"Under H₀ (smaller model correct) distributed as F_{p₁−p₀, n−p₁−1}"},
         ]},
-      { label:"Coefficient of determination R²", latex:"R² = 1 − RSS/TSS = RegSS/TSS",
+      { label:"Coefficient of determination R²", latex:String.raw`R^2 = 1 - \frac{\mathrm{RSS}}{\mathrm{TSS}} = \frac{\mathrm{RegSS}}{\mathrm{TSS}}`,
         vars:[
           {sym:"RSS",   desc:"Residual sum of squares Σ(yᵢ − ŷᵢ)²"},
           {sym:"TSS",   desc:"Total sum of squares Σ(yᵢ − ȳ)² — total variance in y"},
           {sym:"RegSS", desc:"Regression sum of squares Σ(ŷᵢ − ȳ)² — variance explained by the model"},
           {sym:"R²",    desc:"Proportion of variance explained; R² ∈ [0,1], larger is better"},
         ]},
-      { label:"AIC — Akaike Information Criterion", latex:"AIC = −2 max log L + 2p",
+      { label:"AIC — Akaike Information Criterion", latex:String.raw`\mathrm{AIC} = -2 \max \log L + 2p`,
         vars:[
           {sym:"max log L", desc:"Maximised log-likelihood — measures how well the model fits"},
           {sym:"p",         desc:"Number of estimated parameters — the penalty for complexity"},
           {sym:"AIC",       desc:"Select the model with minimum AIC. When σ² unknown: AIC = n·log(RSS/n) + 2p"},
         ]},
-      { label:"BIC — Bayesian Information Criterion", latex:"BIC = −2 max log L + log(n)·p",
+      { label:"BIC — Bayesian Information Criterion", latex:String.raw`\mathrm{BIC} = -2 \max \log L + \log(n)\, p`,
         vars:[
           {sym:"log(n)", desc:"Natural log of sample size — grows with n, penalises more than AIC for n ≥ 8 (i.e. more than e² = 7.3 observations)"},
           {sym:"p",      desc:"Number of parameters"},
         ]},
-      { label:"Cross-validation error", latex:"ÊrrCV = (1/n) Σᵢ L(yᵢ, ŷᵢ)",
+      { label:"Cross-validation error", latex:String.raw`\widehat{\mathrm{Err}}_{\mathrm{CV}} = \frac{1}{n} \sum_{i=1}^{n} L(y_i, \hat{y}_i)`,
         vars:[
           {sym:"L(yᵢ, ŷᵢ)", desc:"Loss function comparing observed yᵢ to out-of-fold prediction ŷᵢ — quadratic (yᵢ−ŷᵢ)² or absolute error"},
           {sym:"ŷᵢ",         desc:"Prediction for i using the model fitted on the other q−1 folds (q-fold CV; q=5 or 10 preferred, q=n is leave-one-out)"},
@@ -471,52 +478,52 @@ const chapters = [
     color:"#fdf3e8", accent:"#a85c00", icon:"🔧",
     summary:"Beyond ordinary least squares: PCR and PLS use derived components to handle correlated predictors, while Ridge and Lasso impose penalties to shrink coefficients and reduce variance.",
     formulas:[
-      { label:"Bias-Variance decomposition of MSE", latex:"MSE = σ² + Var(ŷ) + [E(y − ŷ)]²",
+      { label:"Bias-Variance decomposition of MSE", latex:String.raw`\mathrm{MSE} = \sigma^2 + \mathrm{Var}(\hat{y}) + [\mathrm{E}(y - \hat{y})]^2`,
         vars:[
           {sym:"σ²",          desc:"Irreducible error — inherent noise in the data, cannot be reduced"},
           {sym:"Var(ŷ)",       desc:"Variance of the prediction — how much ŷ changes across different training sets"},
           {sym:"[E(y − ŷ)]²", desc:"Squared bias — systematic error; zero for unbiased estimators like OLS"},
         ]},
-      { label:"Ridge regression", latex:"β̂Ridge = argmin{ Σ(yᵢ−β₀−Σxᵢⱼβⱼ)² + λ Σβⱼ² }",
+      { label:"Ridge regression", latex:String.raw`\hat{\beta}_{\mathrm{Ridge}} = \mathrm{argmin}\Big\{ \sum_{i=1}^{n} \big(y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}\beta_j\big)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \Big\}`,
         vars:[
           {sym:"λ ≥ 0",   desc:"Tuning parameter — larger λ means stronger shrinkage toward zero"},
           {sym:"Σβⱼ²",    desc:"L2 penalty — sum of squared coefficients; penalises large coefficients"},
           {sym:"β̂Ridge", desc:"Closed-form solution: (XᵀX + λI)⁻¹Xᵀy — never exactly zero, shrinks all"},
         ]},
-      { label:"Lasso regression", latex:"β̂Lasso = argmin{ Σ(yᵢ−β₀−Σxᵢⱼβⱼ)² + λ Σ|βⱼ| },   equiv. constraint form: Σ|βⱼ| ≤ s",
+      { label:"Lasso regression", latex:String.raw`\hat{\beta}_{\mathrm{Lasso}} = \mathrm{argmin}\Big\{ \sum_{i=1}^{n} \big(y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}\beta_j\big)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \Big\},\quad \text{equiv. constraint: } \sum_{j=1}^{p} |\beta_j| \le s`,
         vars:[
           {sym:"Σ|βⱼ|",   desc:"L1 penalty — diamond-shaped constraint drives some coefficients to exactly zero (variable selection)"},
           {sym:"λ",        desc:"Tuning parameter — increasing λ progressively zeros out more coefficients"},
           {sym:"s",        desc:"Equivalent form: Σ|βⱼ| ≤ s — directly bounds total coefficient magnitude"},
         ]},
-      { label:"Ridge via SVD — shrinkage & degrees of freedom", latex:"ŷRidge = Σⱼ uⱼ [dⱼ²/(dⱼ²+λ)] uⱼᵀy,   df(λ) = trace(X(XᵀX+λI)⁻¹Xᵀ) = Σⱼ dⱼ²/(dⱼ²+λ)",
+      { label:"Ridge via SVD — shrinkage & degrees of freedom", latex:String.raw`\hat{y}_{\mathrm{Ridge}} = \sum_{j=1}^{p} u_j\, \frac{d_j^2}{d_j^2 + \lambda}\, u_j^\top y,\quad \mathrm{df}(\lambda) = \mathrm{tr}\big(X(X^\top X + \lambda I)^{-1} X^\top\big) = \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda}`,
         vars:[
           {sym:"uⱼ",            desc:"j-th left singular vector of X (from the SVD X = UDVᵀ) — the j-th principal-component direction"},
           {sym:"dⱼ",            desc:"j-th singular value of X; dⱼ² is proportional to the variance of principal component j"},
           {sym:"dⱼ²/(dⱼ²+λ)",  desc:"Shrinkage factor ∈ (0,1] — ridge shrinks each component by this; low-variance (small dⱼ²) directions are shrunk most, vs PCR which discards them entirely"},
           {sym:"df(λ)",         desc:"Effective degrees of freedom; λ=0 → p, λ→∞ → 0"},
         ]},
-      { label:"PCR — spectral decomposition (p. 18)", latex:"Cov(X) = VAVᵀ,   Z = XV",
+      { label:"PCR — spectral decomposition (p. 18)", latex:String.raw`\mathrm{Cov}(X) = VAV^\top,\quad Z = XV`,
         vars:[
           {sym:"V",   desc:"p × p matrix of eigenvectors of Cov(X) — each column vᵢ is a principal component direction"},
           {sym:"A",   desc:"Diagonal matrix of eigenvalues a₁ ≥ a₂ ≥ … ≥ aₚ — variance explained by each component"},
           {sym:"Z",   desc:"Score matrix — n × p matrix of principal component values; columns of Z are uncorrelated"},
         ]},
-      { label:"PCR — reduced model estimator (p. 19)", latex:"θ̂₁:q = (Z₁:qᵀZ₁:q)⁻¹ Z₁:qᵀy,   β̃ = V₁:q θ̂₁:q",
+      { label:"PCR — reduced model estimator (p. 19)", latex:String.raw`\hat{\theta}_{1:q} = (Z_{1:q}^\top Z_{1:q})^{-1} Z_{1:q}^\top y,\quad \tilde{\beta} = V_{1:q}\, \hat{\theta}_{1:q}`,
         vars:[
           {sym:"q",       desc:"Number of principal components retained (1 ≤ q < p) — chosen by CV"},
           {sym:"Z₁:q",    desc:"First q columns of Z — the q most variable components of X"},
           {sym:"θ̂₁:q",   desc:"OLS coefficients in the reduced PC space"},
           {sym:"β̃",      desc:"Back-transformed coefficients in the original variable space: β̃ = V₁:q θ̂₁:q"},
         ]},
-      { label:"PLS — loading direction (p. 20)", latex:"wₖ = argmax Cov(y, Xw)   s.t. ‖wₖ‖=1, Cov(Xwₖ,Xwⱼ)=0 for j<k;   T = XW",
+      { label:"PLS — loading direction (p. 20)", latex:String.raw`w_k = \mathrm{argmax}\, \mathrm{Cov}(y, Xw)\quad \text{s.t. } \|w_k\| = 1,\ \mathrm{Cov}(Xw_k, Xw_j) = 0 \text{ for } j < k;\quad T = XW`,
         vars:[
           {sym:"wₖ",             desc:"k-th PLS loading vector — direction in X-space most correlated with y"},
           {sym:"Cov(y, Xw)",     desc:"Covariance between y and the projection Xw — PLS maximises this directly"},
           {sym:"Cov(Xwₖ,Xwⱼ)=0", desc:"Orthogonality constraint — each new component must be uncorrelated with previous ones"},
           {sym:"T = XW",         desc:"Score matrix — columns tₖ = Xwₖ are the PLS components used for regression"},
         ]},
-      { label:"Continuum regression direction (p. 20)", latex:"wₖ = argmax [Cov(y,Xw)]² [Var(Xw)]^(δ/(1−δ)−1)   s.t. ‖wₖ‖=1, Cov(Xwₖ,Xwⱼ)=0 for j<k",
+      { label:"Continuum regression direction (p. 20)", latex:String.raw`w_k = \mathrm{argmax}\, [\mathrm{Cov}(y, Xw)]^2\, [\mathrm{Var}(Xw)]^{\delta/(1-\delta) - 1}\quad \text{s.t. } \|w_k\| = 1,\ \mathrm{Cov}(Xw_k, Xw_j) = 0 \text{ for } j < k`,
         vars:[
           {sym:"wₖ",          desc:"k-th loading direction (k = 1,…,q ≤ p) — regression is then done on y and T = XW, as in PLS"},
           {sym:"δ ∈ [0,1]",  desc:"Mixing parameter: δ=0 → LS, δ=0.5 → PLS, δ=1 → PCR"},
@@ -531,14 +538,14 @@ const chapters = [
     color:"#fff0f0", accent:"#a02020", icon:"🎯",
     summary:"Assigns observations to classes using linear decision boundaries. LDA assumes Gaussian classes with equal covariance; QDA relaxes that; logistic regression models class probabilities directly.",
     formulas:[
-      { label:"Bayes classification rule (posterior)", latex:"P(G=k|x) = hₖ(x)πₖ / Σₗ hₗ(x)πₗ",
+      { label:"Bayes classification rule (posterior)", latex:String.raw`P(G = k \mid x) = \frac{h_k(x)\, \pi_k}{\sum_{l=1}^{K} h_l(x)\, \pi_l}`,
         vars:[
           {sym:"P(G=k|x)",      desc:"Posterior probability that x belongs to class k; classify x to the class with the largest posterior"},
           {sym:"hₖ(x)",         desc:"Class-conditional density (likelihood) of x in class k — in LDA/QDA assumed multivariate Gaussian φₖ"},
           {sym:"πₖ",            desc:"Prior probability of class k, estimated as nₖ/n"},
           {sym:"Σₗ hₗ(x)πₗ",   desc:"Normalising constant (total probability) — makes the posteriors sum to 1"},
         ]},
-      { label:"LDA linear discriminant function", latex:"δₖ(x) = xᵀΣ⁻¹μₖ − ½μₖᵀΣ⁻¹μₖ + log πₖ",
+      { label:"LDA linear discriminant function", latex:String.raw`\delta_k(x) = x^\top \Sigma^{-1} \mu_k - \tfrac{1}{2} \mu_k^\top \Sigma^{-1} \mu_k + \log \pi_k`,
         vars:[
           {sym:"x",      desc:"New observation (p-dimensional feature vector) to classify"},
           {sym:"μₖ",     desc:"Mean vector of class k — sample mean of training points in class k"},
@@ -546,19 +553,19 @@ const chapters = [
           {sym:"πₖ",     desc:"Prior probability of class k — estimated as nₖ/n"},
           {sym:"δₖ(x)",  desc:"Score for class k; classify x to argmax_k δₖ(x)"},
         ]},
-      { label:"QDA quadratic discriminant function", latex:"δₖ(x) = −½log|Σₖ| − ½(x−μₖ)ᵀΣₖ⁻¹(x−μₖ) + log πₖ",
+      { label:"QDA quadratic discriminant function", latex:String.raw`\delta_k(x) = -\tfrac{1}{2} \log |\Sigma_k| - \tfrac{1}{2} (x - \mu_k)^\top \Sigma_k^{-1} (x - \mu_k) + \log \pi_k`,
         vars:[
           {sym:"|Σₖ|",                desc:"Determinant of class-specific covariance Σₖ — penalises spread"},
           {sym:"(x−μₖ)ᵀΣₖ⁻¹(x−μₖ)", desc:"Mahalanobis distance from x to class k centre"},
           {sym:"Σₖ",                  desc:"Class-specific covariance — QDA estimates a separate Σₖ per class"},
         ]},
-      { label:"Regularised discriminant covariance", latex:"Σ̂ₖ(α) = αΣ̂ₖ + (1−α)Σ̂",
+      { label:"Regularised discriminant covariance", latex:String.raw`\hat{\Sigma}_k(\alpha) = \alpha \hat{\Sigma}_k + (1 - \alpha) \hat{\Sigma}`,
         vars:[
           {sym:"α ∈ [0,1]", desc:"α=0 → LDA (pooled Σ), α=1 → QDA (class-specific Σ)"},
           {sym:"Σ̂ₖ",        desc:"Sample covariance of class k"},
           {sym:"Σ̂",         desc:"Pooled covariance: weighted average across all classes"},
         ]},
-      { label:"Logistic regression (K classes, p. 51)", latex:"log P(G=k|x)/P(G=K|x) = βₖ₀ + βₖᵀx   for k = 1,…,K−1",
+      { label:"Logistic regression (K classes, p. 51)", latex:String.raw`\log \frac{P(G = k \mid x)}{P(G = K \mid x)} = \beta_{k0} + \beta_k^\top x,\quad k = 1, \dots, K - 1`,
         vars:[
           {sym:"P(G=k|x)/P(G=K|x)", desc:"Log-odds of class k relative to the reference class K — each pair of classes gets its own linear model"},
           {sym:"βₖ₀",               desc:"Intercept for class k — one per non-reference class"},
@@ -567,7 +574,7 @@ const chapters = [
           {sym:"P(G=k|x)",          desc:"Posterior probability for class k: exp{βₖ₀+βₖᵀx} / [1 + Σₗ exp{βₗ₀+βₗᵀx}]"},
           {sym:"P(G=K|x)",          desc:"Posterior probability for reference class K: 1 / [1 + Σₗ exp{βₗ₀+βₗᵀx}]"},
         ]},
-      { label:"Logistic regression (2 classes, p. 51)", latex:"P(G=1|x) = exp(β₀+β₁ᵀx) / [1 + exp(β₀+β₁ᵀx)]",
+      { label:"Logistic regression (2 classes, p. 51)", latex:String.raw`P(G = 1 \mid x) = \frac{\exp(\beta_0 + \beta_1^\top x)}{1 + \exp(\beta_0 + \beta_1^\top x)}`,
         vars:[
           {sym:"β₀",      desc:"Intercept — shifts the decision boundary"},
           {sym:"β₁",      desc:"p-vector of log-odds coefficients for predictors x"},
@@ -581,32 +588,32 @@ const chapters = [
     color:"#eef5ff", accent:"#1a4a9a", icon:"〰️",
     summary:"Extends linear models to capture nonlinear patterns by replacing raw predictors with transformed versions — polynomials, splines — while keeping a linear model structure in the new features.",
     formulas:[
-      { label:"Basis expansion model", latex:"f(x) = Σₘ βₘ hₘ(x),   m = 1, …, M",
+      { label:"Basis expansion model", latex:String.raw`f(x) = \sum_{m=1}^{M} \beta_m h_m(x)`,
         vars:[
           {sym:"hₘ(x)", desc:"m-th transformation (basis function) of x — e.g. x², log(x), spline knot functions"},
           {sym:"βₘ",    desc:"Coefficient for the m-th basis function — estimated by OLS in the new space"},
           {sym:"M",     desc:"Total number of basis functions used"},
         ]},
-      { label:"Spline basis (order M, knot ξₗ)", latex:"hⱼ(x) = x^(j−1)  (j = 1,…,M),   h_(M+l)(x) = (x−ξₗ)₊^(M−1)  (l = 1,…,k)",
+      { label:"Spline basis (order M, knot ξₗ)", latex:String.raw`h_j(x) = x^{j-1} \ (j = 1, \dots, M),\quad h_{M+l}(x) = (x - \xi_l)_+^{M-1} \ (l = 1, \dots, k)`,
         vars:[
           {sym:"ξₗ",        desc:"l-th knot — boundary point where polynomial pieces join; placed at data percentiles"},
           {sym:"(x−ξₗ)₊",   desc:"Positive part: equals (x−ξₗ) if x > ξₗ, else zero"},
           {sym:"M−1",       desc:"Degree of polynomial pieces; M=4 gives cubic splines"},
           {sym:"k",          desc:"Number of knots — total number of basis functions = parameters = df is M + k"},
         ]},
-      { label:"Smoothing spline — penalised criterion", latex:"RSS(f,λ) = Σᵢ{yᵢ−f(xᵢ)}² + λ∫[f″(t)]² dt",
+      { label:"Smoothing spline — penalised criterion", latex:String.raw`\mathrm{RSS}(f, \lambda) = \sum_{i=1}^{n} \{y_i - f(x_i)\}^2 + \lambda \int [f''(t)]^2\, dt`,
         vars:[
           {sym:"f″(t)",       desc:"Second derivative of f — measures curvature; large f″ means a wiggly function"},
           {sym:"λ",           desc:"Smoothing parameter: λ=0 interpolates all data; λ→∞ gives a straight OLS line"},
           {sym:"∫[f″(t)]² dt", desc:"Total curvature penalty — discourages overfitting wiggles"},
         ]},
-      { label:"Smoothing spline estimator", latex:"θ̂ = (NᵀN + λΩN)⁻¹Nᵀy",
+      { label:"Smoothing spline estimator", latex:String.raw`\hat{\theta} = (N^\top N + \lambda \Omega_N)^{-1} N^\top y`,
         vars:[
           {sym:"N",  desc:"Matrix of natural cubic spline basis functions: {N}ᵢⱼ = Nⱼ(xᵢ)"},
           {sym:"ΩN", desc:"Roughness penalty matrix: {ΩN}ⱼₖ = ∫Nⱼ″(t)Nₖ″(t)dt"},
           {sym:"θ̂", desc:"Spline coefficients — analogous to Ridge regression with penalty matrix λΩN"},
         ]},
-      { label:"Smoother matrix & effective degrees of freedom", latex:"f̂λ = Sλy,   df(λ) = trace(Sλ)",
+      { label:"Smoother matrix & effective degrees of freedom", latex:String.raw`\hat{f}_\lambda = S_\lambda y,\quad \mathrm{df}(\lambda) = \mathrm{tr}(S_\lambda)`,
         vars:[
           {sym:"Sλ",     desc:"Smoother matrix Sλ = N(NᵀN+λΩN)⁻¹Nᵀ — depends only on the xᵢ and λ, not on y; the fit is linear in y"},
           {sym:"f̂λ",    desc:"Vector of fitted values for the chosen λ"},
@@ -621,19 +628,19 @@ const chapters = [
     summary:"GAMs replace each linear term βⱼxⱼ with an unknown smooth function fⱼ(xⱼ). The backfitting algorithm estimates each function by iteratively fitting it to the residuals from all others.",
     note:"Backfitting: initialise α̂ = ȳ, f̂ⱼ ≡ 0; cycle j=1,…,p fitting f̂ⱼ ← Sⱼ[residuals] until convergence.",
     formulas:[
-      { label:"GAM model via link function g", latex:"g[μ(x)] = α + f₁(x₁) + f₂(x₂) + … + fₚ(xₚ)",
+      { label:"GAM model via link function g", latex:String.raw`g[\mu(x)] = \alpha + f_1(x_1) + f_2(x_2) + \cdots + f_p(x_p)`,
         vars:[
           {sym:"g(·)",        desc:"Link function: identity g(μ)=μ for regression; logit g(μ)=log(μ/(1−μ)) for classification"},
           {sym:"μ(x) = E(y|x)", desc:"Conditional mean of y given predictors x"},
           {sym:"fⱼ(xⱼ)",      desc:"Unknown smooth function for predictor j — estimated as a cubic smoothing spline"},
           {sym:"α",            desc:"Intercept — estimated as the overall mean ȳ"},
         ]},
-      { label:"Penalised RSS (PRSS)", latex:"PRSS = Σᵢ{yᵢ−α−Σⱼfⱼ(xᵢⱼ)}² + Σⱼ λⱼ∫[fⱼ″(tⱼ)]² dtⱼ",
+      { label:"Penalised RSS (PRSS)", latex:String.raw`\mathrm{PRSS} = \sum_{i=1}^{n} \Big\{ y_i - \alpha - \sum_{j=1}^{p} f_j(x_{ij}) \Big\}^2 + \sum_{j=1}^{p} \lambda_j \int [f_j''(t_j)]^2\, dt_j`,
         vars:[
           {sym:"λⱼ",              desc:"Per-predictor smoothing parameter — controls how wiggly fⱼ can be"},
           {sym:"∫[fⱼ″(tⱼ)]² dtⱼ", desc:"Roughness of fⱼ — penalises non-linearity for predictor j independently"},
         ]},
-      { label:"Backfitting update", latex:"f̂ⱼ ← Sⱼ[ yᵢ − α̂ − Σ_{k≠j} f̂ₖ(xᵢₖ) ],   α̂ = ave(yᵢ)",
+      { label:"Backfitting update", latex:String.raw`\hat{f}_j \leftarrow S_j\Big[\, y_i - \hat{\alpha} - \sum_{k \ne j} \hat{f}_k(x_{ik}) \Big],\quad \hat{\alpha} = \mathrm{ave}(y_i)`,
         vars:[
           {sym:"Sⱼ",                       desc:"Cubic smoothing-spline smoother for predictor j"},
           {sym:"yᵢ − α̂ − Σ_{k≠j} f̂ₖ(xᵢₖ)", desc:"Partial residuals — the part of y not yet explained by the other functions; f̂ⱼ is fitted to these, cycling j=1,…,p until the f̂ⱼ stabilise"},
@@ -647,7 +654,7 @@ const chapters = [
     color:"#fffbe8", accent:"#7a6000", icon:"🌳",
     summary:"Decision trees recursively partition the feature space into rectangular regions, fitting a constant in each. Regression trees predict the mean; classification trees the majority class. Random Forests average many trees for stability.",
     formulas:[
-      { label:"Best split criterion (regression)", latex:"min_{j,s} [ min_{c₁} Σ_{xᵢ∈R₁}(yᵢ−c₁)² + min_{c₂} Σ_{xᵢ∈R₂}(yᵢ−c₂)² ]",
+      { label:"Best split criterion (regression)", latex:String.raw`\min_{j,s} \Big[ \min_{c_1} \sum_{x_i \in R_1} (y_i - c_1)^2 + \min_{c_2} \sum_{x_i \in R_2} (y_i - c_2)^2 \Big]`,
         vars:[
           {sym:"j",                 desc:"Split variable — which predictor to split on"},
           {sym:"s",                 desc:"Split point — threshold value along predictor j"},
@@ -655,26 +662,26 @@ const chapters = [
           {sym:"R₂(j,s)",           desc:"Right region: observations with xⱼ > s"},
           {sym:"c₁, c₂", desc:"Constant predictions in each region — optimum is ĉₘ = ave(yᵢ | xᵢ∈Rₘ), the mean y in that region"},
         ]},
-      { label:"Cost-complexity pruning", latex:"cα(T) = Σₘ nₘ Qₘ(T) + α|T|",
+      { label:"Cost-complexity pruning", latex:String.raw`c_\alpha(T) = \sum_{m=1}^{|T|} n_m Q_m(T) + \alpha |T|`,
         vars:[
           {sym:"|T|",   desc:"Number of terminal (leaf) nodes — proxy for model complexity"},
           {sym:"nₘ",    desc:"Number of observations in terminal node m"},
           {sym:"Qₘ(T)", desc:"Node impurity: MSE for regression; Gini or entropy for classification"},
           {sym:"α ≥ 0", desc:"Pruning parameter: α=0 keeps full tree; large α yields small tree"},
         ]},
-      { label:"Gini index (classification)", latex:"Gini = Σₖ p̂ₘₖ(1 − p̂ₘₖ)",
+      { label:"Gini index (classification)", latex:String.raw`\mathrm{Gini} = \sum_{k=1}^{K} \hat{p}_{mk} (1 - \hat{p}_{mk})`,
         vars:[
           {sym:"p̂ₘₖ",     desc:"Proportion of class k observations in node m"},
           {sym:"Gini = 0",  desc:"Pure node — all observations belong to one class"},
           {sym:"Gini → max", desc:"Impure node — classes equally distributed; max = 1 − 1/K"},
         ]},
-      { label:"Other impurity measures (classification)", latex:"Entropy = −Σₖ p̂ₘₖ log p̂ₘₖ,   Misclass. = 1 − p̂ₘₖ₍ₘ₎",
+      { label:"Other impurity measures (classification)", latex:String.raw`\mathrm{Entropy} = -\sum_{k=1}^{K} \hat{p}_{mk} \log \hat{p}_{mk},\quad \text{Misclass.} = 1 - \hat{p}_{m k(m)}`,
         vars:[
           {sym:"p̂ₘₖ",      desc:"Proportion of class k observations in node m"},
           {sym:"k(m)",      desc:"Majority class in node m, k(m) = argmaxₖ p̂ₘₖ; misclassification error is 1 minus its proportion"},
           {sym:"Entropy",   desc:"Cross-entropy / deviance — like Gini it is differentiable, so preferred over misclassification when growing the tree"},
         ]},
-      { label:"Random Forest variable importance", latex:"θ̂ⱼ = (1/B) Σ_b δ_bⱼ,   δ_bⱼ = π_bⱼ − π_b",
+      { label:"Random Forest variable importance", latex:String.raw`\hat{\theta}_j = \frac{1}{B} \sum_{b=1}^{B} \delta_{bj},\quad \delta_{bj} = \pi_{bj} - \pi_b`,
         vars:[
           {sym:"B",     desc:"Number of trees in the forest"},
           {sym:"π_b",   desc:"Impurity of tree b on OOB (out-of-bag) data"},
@@ -690,32 +697,32 @@ const chapters = [
     color:"#f5eaf8", accent:"#7a1a9a", icon:"🔬",
     summary:"SVMs find the maximum-margin hyperplane separating two classes. Slack variables handle non-separable cases. The kernel trick implicitly maps data to higher dimensions for nonlinear boundaries.",
     formulas:[
-      { label:"Hyperplane definition", latex:"f(x) = β₀ + βᵀx = 0",
+      { label:"Hyperplane definition", latex:String.raw`f(x) = \beta_0 + \beta^\top x = 0`,
         vars:[
           {sym:"f(x)",  desc:"Signed value for point x — equals 0 on the hyperplane, positive one side, negative the other"},
           {sym:"β₀",    desc:"Bias (intercept) — shifts the hyperplane away from the origin"},
           {sym:"β",     desc:"Raw (unnormalised) weight vector — points perpendicular to the hyperplane; βᵀx is the dot product β₁x₁ + … + βₚxₚ. Note β/‖β‖ is the unit normal"},
           {sym:"x",     desc:"Input point (p-dimensional feature vector) being evaluated"},
         ]},
-      { label:"Max-margin optimisation (separable)", latex:"min ‖β‖   s.t.  gᵢ(xᵢᵀβ + β₀) ≥ 1  ∀i",
+      { label:"Max-margin optimisation (separable)", latex:String.raw`\min \|\beta\| \quad \text{s.t. } g_i(x_i^\top \beta + \beta_0) \ge 1 \ \forall i`,
         vars:[
           {sym:"gᵢ ∈ {−1,+1}",     desc:"Class label of observation i"},
           {sym:"‖β‖",               desc:"Norm of weight vector — margin M = 1/‖β‖; minimising ‖β‖ maximises M"},
           {sym:"gᵢ(xᵢᵀβ + β₀) ≥ 1", desc:"Margin constraint — each point must be ≥ M away from the boundary"},
         ]},
-      { label:"Non-separable case with slack variables", latex:"min ½‖β‖² + C Σᵢ ξᵢ   s.t.  gᵢ(xᵢᵀβ+β₀) ≥ 1−ξᵢ,  ξᵢ ≥ 0",
+      { label:"Non-separable case with slack variables", latex:String.raw`\min\, \tfrac{1}{2}\|\beta\|^2 + C \sum_{i=1}^{n} \xi_i \quad \text{s.t. } g_i(x_i^\top \beta + \beta_0) \ge 1 - \xi_i,\ \xi_i \ge 0`,
         vars:[
           {sym:"ξᵢ ≥ 0", desc:"Slack variable — how far observation i is on the wrong side of its margin"},
           {sym:"C > 0",   desc:"Cost parameter: large C → narrow margin; small C → wide margin"},
           {sym:"Σξᵢ",     desc:"Total constraint violation; ξᵢ > 1 means observation i is misclassified"},
         ]},
-      { label:"Solution & support vectors (KKT)", latex:"β = Σᵢ αᵢ gᵢ xᵢ,   Σᵢ αᵢ gᵢ = 0,   0 ≤ αᵢ (≤ C)",
+      { label:"Solution & support vectors (KKT)", latex:String.raw`\beta = \sum_{i=1}^{n} \alpha_i g_i x_i,\quad \sum_{i=1}^{n} \alpha_i g_i = 0,\quad 0 \le \alpha_i \ (\le C)`,
         vars:[
           {sym:"αᵢ",              desc:"Lagrange multipliers from the KKT conditions; 0 ≤ αᵢ ≤ C (separable case: C = ∞)"},
           {sym:"β = Σᵢ αᵢ gᵢ xᵢ", desc:"Weight vector is a linear combination of the training points — only those with αᵢ > 0 contribute"},
           {sym:"support vectors", desc:"The points with αᵢ > 0: on the margin (0 < αᵢ < C) or, when non-separable, inside/wrong side (αᵢ = C). β₀ is recovered from any margin SV via gᵢ(xᵢᵀβ+β₀)=1"},
         ]},
-      { label:"Kernel function & kernel trick", latex:"K(u,v) = ⟨h(u), h(v)⟩;   f(x) = Σᵢ αᵢ gᵢ ⟨h(x), h(xᵢ)⟩ + β₀",
+      { label:"Kernel function & kernel trick", latex:String.raw`K(u, v) = \langle h(u), h(v) \rangle;\quad f(x) = \sum_{i=1}^{n} \alpha_i g_i \langle h(x), h(x_i) \rangle + \beta_0`,
         vars:[
           {sym:"u, v",   desc:"Two input observations (p-dimensional feature vectors) being compared"},
           {sym:"h(·)",   desc:"Implicit mapping to higher-dimensional space — never computed explicitly"},
@@ -739,89 +746,89 @@ const partMeta = {
 const examQA = {
   1: [
     { q:"Multicollinearity / near-singular XᵀX: what goes wrong in estimation and inference?",
-      formula:"β̂ = (XᵀX)⁻¹ Xᵀy;   β̂ ~ Nₚ₊₁(β, σ²(XᵀX)⁻¹);   zⱼ = β̂ⱼ / (σ̂ √dⱼ)",
+      formula:String.raw`\hat{\beta} = (X^\top X)^{-1} X^\top y;\quad \hat{\beta} \sim N_{p+1}\big(\beta,\ \sigma^2 (X^\top X)^{-1}\big);\quad z_j = \frac{\hat{\beta}_j}{\hat{\sigma}\sqrt{d_j}}`,
       a:"When predictors are highly correlated XᵀX becomes nearly singular, so (XᵀX)⁻¹ has huge entries. The LS estimator is then numerically unstable and not uniquely defined. For inference the covariance Cov(β̂) = σ²(XᵀX)⁻¹ blows up, so the standard errors √dⱼ σ̂ become enormous and the t-tests zⱼ = β̂ⱼ/(σ̂√dⱼ) become unreliable — we may wrongly fail to reject H₀: βⱼ = 0. Remedies: variable selection, derived inputs (PCR, PLS), or shrinkage (ridge, lasso).",
       asked:["26 Jan 2026","Feb 2025 ②"] },
     { q:"What is \"statistical inference\"? Give an example in the context of linear regression.",
-      formula:"zⱼ = β̂ⱼ / (σ̂ √dⱼ),   under H₀: zⱼ ~ tₙ₋ₚ₋₁",
+      formula:String.raw`z_j = \frac{\hat{\beta}_j}{\hat{\sigma}\sqrt{d_j}},\quad \text{under } H_0:\ z_j \sim t_{n-p-1}`,
       a:"Statistical inference means drawing conclusions about unknown population parameters from sample data, treating the errors (and hence y) as random variables — building confidence intervals and performing hypothesis tests. It needs the assumption ε ~ N(0, σ²I). Example: testing H₀: βⱼ = 0 with the statistic zⱼ, which under H₀ follows tₙ₋ₚ₋₁; a large |zⱼ| rejects H₀, i.e. predictor j contributes significantly. Equivalently, the 1−α confidence interval β̂ⱼ ± z₁₋α/₂ √dⱼ σ̂.",
       asked:["1 Feb 2026"] },
   ],
   2: [
     { q:"AIC vs BIC: what is the difference, and when do you use which (variable selection)?",
-      formula:"AIC = −2 max log L + 2p;   BIC = −2 max log L + log(n)·p",
+      formula:String.raw`\mathrm{AIC} = -2 \max \log L + 2p;\quad \mathrm{BIC} = -2 \max \log L + \log(n)\, p`,
       a:"Both penalise model complexity on top of the maximised log-likelihood; AIC's penalty is 2p, BIC's is log(n)·p. With σ² known, AIC = RSS/σ² + 2p and BIC = RSS/σ² + log(n)p; with σ² unknown, AIC = n·log(RSS/n) + 2p. For n ≥ 8 (more than e² ≈ 7.3 observations) BIC penalises more strongly → smaller models. Rule of thumb: AIC for descriptive models, BIC for predictive models. Select the smallest value; absolute values are not interpretable. Used to compare models in forward/backward/best-subset selection (strictly valid for nested models).",
       asked:["4 Feb 2026","Feb 2025 ①"] },
   ],
   3: [
     { q:"What are principal components? How can they be used for regression (PCR)?",
-      formula:"Cov(X) = VAVᵀ, Z = XV;   θ̂₁:q = (Z₁:qᵀZ₁:q)⁻¹Z₁:qᵀy,   β̃ = V₁:q θ̂₁:q",
+      formula:String.raw`\mathrm{Cov}(X) = VAV^\top,\quad Z = XV;\quad \hat{\theta}_{1:q} = (Z_{1:q}^\top Z_{1:q})^{-1} Z_{1:q}^\top y,\quad \tilde{\beta} = V_{1:q}\, \hat{\theta}_{1:q}`,
       a:"Principal components are uncorrelated linear combinations Z = XV of the predictors, ordered by variance, from the spectral decomposition Cov(X) = VAVᵀ (V holds the eigenvectors, A = diag(a₁ ≥ … ≥ aₚ) the variances). PCR regresses y on the first q (highest-variance) components, giving θ̂₁:q, then back-transforms to the original space with β̃. This handles correlated predictors and the p > n case by discarding low-variance directions. Center and scale X first, since PCA is not scale invariant.",
       asked:["1 Feb 2026"] },
     { q:"Partial Least Squares (PLS) — and how does its objective differ from PCR?",
-      formula:"wₖ = argmax Cov(y, Xw)   s.t. ‖wₖ‖=1, Cov(Xwₖ,Xwⱼ)=0 for j<k;   T = XW",
+      formula:String.raw`w_k = \mathrm{argmax}\, \mathrm{Cov}(y, Xw)\quad \text{s.t. } \|w_k\| = 1,\ \mathrm{Cov}(Xw_k, Xw_j) = 0 \text{ for } j < k;\quad T = XW`,
       a:"PLS builds components T = XW that, unlike PCR, use the response y: each loading wₖ maximises Cov(y, Xw) subject to ‖wₖ‖ = 1 and Cov(Xwₖ, Xwⱼ) = 0 for j < k. It then regresses y on the scores (y = Tγ + ε̃, so β̃ = Wγ). PCR's directions instead maximise the variance of X alone (eigenvectors of Cov(X)) and ignore y. So PLS finds directions that are both high-variance and correlated with the response, usually predicting better than PCR. Center (and optionally scale) X and y first.",
       asked:["4 Feb 2026","Feb 2025 ②"] },
     { q:"PCR and its relationship with ridge regression.",
-      formula:"ŷRidge = Σⱼ uⱼ [dⱼ²/(dⱼ²+λ)] uⱼᵀy",
+      formula:String.raw`\hat{y}_{\mathrm{Ridge}} = \sum_{j=1}^{p} u_j\, \frac{d_j^2}{d_j^2 + \lambda}\, u_j^\top y`,
       a:"Both rely on the principal components of X. PCR regresses on the first q components and discards the p−q smallest-eigenvalue directions entirely (a hard cut). Ridge also works in the principal-component basis but, instead of discarding, shrinks each component's contribution by the factor dⱼ²/(dⱼ²+λ) — lower-variance (small dⱼ²) components are shrunk most. So PCR makes a hard cut while ridge applies a smooth shrinkage.",
       asked:["Feb 2025 ①"] },
     { q:"Ridge vs Lasso: objective functions, constraints, and why Lasso gives exact zeros.",
-      formula:"β̂Ridge = argmin{ Σ(yᵢ−β₀−Σxᵢⱼβⱼ)² + λ Σβⱼ² };   β̂Lasso = argmin{ Σ(yᵢ−β₀−Σxᵢⱼβⱼ)² + λ Σ|βⱼ| }",
+      formula:String.raw`\hat{\beta}_{\mathrm{Ridge}} = \mathrm{argmin}\Big\{ \sum_{i=1}^{n} \big(y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}\beta_j\big)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \Big\};\quad \hat{\beta}_{\mathrm{Lasso}} = \mathrm{argmin}\Big\{ \sum_{i=1}^{n} \big(y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}\beta_j\big)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \Big\}`,
       a:"Both add a penalty to the RSS to stabilise estimation when XᵀX is near-singular. Ridge uses the L2 penalty λΣβⱼ² and has the closed form (XᵀX+λI)⁻¹Xᵀy — it shrinks all coefficients but never exactly to zero. Lasso uses the L1 penalty λΣ|βⱼ| (equivalently Σ|βⱼ| ≤ s) and has no closed form (needs an iterative solver); its diamond-shaped constraint makes the RSS contours hit corners, driving some βⱼ to exactly zero → automatic variable selection (Fig. 3.1). Both require standardised inputs and leave the intercept unpenalised.",
       asked:["Jan 2025"] },
     { q:"Degrees of freedom: how do we obtain them? Derive the df for ridge regression.",
-      formula:"df(λ) = trace(X(XᵀX + λI)⁻¹Xᵀ) = Σⱼ dⱼ²/(dⱼ²+λ)",
+      formula:String.raw`\mathrm{df}(\lambda) = \mathrm{tr}\big(X(X^\top X + \lambda I)^{-1} X^\top\big) = \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda}`,
       a:"The effective df is the trace of the matrix mapping y to ŷ. For OLS ŷ = Hy with H = X(XᵀX)⁻¹Xᵀ, so df = trace(H) = p. For ridge ŷ = X(XᵀX+λI)⁻¹Xᵀy, hence df(λ) = trace(X(XᵀX+λI)⁻¹Xᵀ). Limits confirm it: λ = 0 → trace(Iₚ) = p; λ → ∞ → df → 0. Using the SVD X = UDVᵀ, df(λ) = Σⱼ dⱼ²/(dⱼ²+λ), the sum of the ridge shrinkage factors.",
       asked:["4 Feb 2026"] },
   ],
   5: [
     { q:"LDA: what is its (Bayesian) basis, the discriminant function, and its parameters?",
-      formula:"P(G=k|x) = hₖ(x)πₖ / Σₗ hₗ(x)πₗ;   δₖ(x) = xᵀΣ⁻¹μₖ − ½μₖᵀΣ⁻¹μₖ + log πₖ",
+      formula:String.raw`P(G = k \mid x) = \frac{h_k(x)\, \pi_k}{\sum_{l=1}^{K} h_l(x)\, \pi_l};\quad \delta_k(x) = x^\top \Sigma^{-1} \mu_k - \tfrac{1}{2} \mu_k^\top \Sigma^{-1} \mu_k + \log \pi_k`,
       a:"LDA is founded on Bayes' theorem: the posterior P(G=k|x) ∝ hₖ(x)πₖ combines the prior πₖ with the class-conditional density hₖ. Assume each hₖ is multivariate Gaussian with a common (pooled) covariance Σ. Taking log-ratios, the quadratic terms in x cancel, leaving the discriminant δₖ(x) which is linear in x; classify x to argmax_k δₖ(x). Parameters estimated from the training data: priors π̂ₖ = nₖ/n, class means μ̂ₖ, and the pooled Σ̂ = (1/(n−K)) Σₖ Σ_{gᵢ=k}(xᵢ−μ̂ₖ)(xᵢ−μ̂ₖ)ᵀ.",
       asked:["26 Jan 2026","Feb 2025 ②"] },
   ],
   7: [
     { q:"Smoothing splines: the criterion, the solution, the degrees of freedom, and the role of λ.",
-      formula:"RSS(f,λ) = Σᵢ{yᵢ−f(xᵢ)}² + λ∫[f″(t)]² dt;   θ̂ = (NᵀN + λΩN)⁻¹Nᵀy;   df(λ) = trace(Sλ)",
+      formula:String.raw`\mathrm{RSS}(f, \lambda) = \sum_{i=1}^{n} \{y_i - f(x_i)\}^2 + \lambda \int [f''(t)]^2\, dt;\quad \hat{\theta} = (N^\top N + \lambda \Omega_N)^{-1} N^\top y;\quad \mathrm{df}(\lambda) = \mathrm{tr}(S_\lambda)`,
       a:"Among all twice-differentiable functions, minimise the penalised RSS — the first term measures fit, the second penalises curvature, and λ trades them off (λ=0 interpolates, λ→∞ gives the linear LS fit). The unique minimiser is a natural cubic spline with knots at the data points: f(x) = Σⱼ Nⱼ(x)θⱼ, with θ̂ a generalised ridge regression. In matrix form the criterion is (y−Nθ)ᵀ(y−Nθ) + λθᵀΩN θ with {N}ᵢⱼ = Nⱼ(xᵢ), {ΩN}ⱼₖ = ∫Nⱼ″Nₖ″dt. The fit is linear in y, f̂λ = Sλy, with effective df(λ) = trace(Sλ); choose λ (the df) by (generalised) cross-validation.",
       asked:["26 Jan 2026","1 Feb 2026","Jan 2025","Feb 2025 ②"] },
   ],
   9: [
     { q:"GAM: what is the model, and how are the functions obtained (backfitting algorithm)?",
-      formula:"g[μ(x)] = α + f₁(x₁) + f₂(x₂) + … + fₚ(xₚ);   f̂ⱼ ← Sⱼ[ yᵢ − α̂ − Σ_{k≠j} f̂ₖ(xᵢₖ) ]",
+      formula:String.raw`g[\mu(x)] = \alpha + f_1(x_1) + f_2(x_2) + \cdots + f_p(x_p);\quad \hat{f}_j \leftarrow S_j\Big[\, y_i - \hat{\alpha} - \sum_{k \ne j} \hat{f}_k(x_{ik}) \Big]`,
       a:"A GAM models the conditional mean through a link g: g[μ(x)] = α + Σⱼ fⱼ(xⱼ), where each fⱼ is an unknown smooth (cubic-spline) function minimising the PRSS. The functions are obtained by backfitting: initialise α̂ = ȳ and f̂ⱼ ≡ 0; then cycle j = 1,…,p, fitting each f̂ⱼ as a smoothing spline Sⱼ applied to the partial residuals yᵢ − α̂ − Σ_{k≠j} f̂ₖ(xᵢₖ), then re-centring f̂ⱼ to sum to zero. Repeat the cycles until all f̂ⱼ stabilise.",
       asked:["Feb 2025 ①"] },
   ],
   11: [
     { q:"Formulate the splitting criterion for regression and classification trees.",
-      formula:"min_{j,s} [ min_{c₁} Σ_{xᵢ∈R₁}(yᵢ−c₁)² + min_{c₂} Σ_{xᵢ∈R₂}(yᵢ−c₂)² ]",
+      formula:String.raw`\min_{j,s} \Big[ \min_{c_1} \sum_{x_i \in R_1} (y_i - c_1)^2 + \min_{c_2} \sum_{x_i \in R_2} (y_i - c_2)^2 \Big]`,
       a:"Regression: greedily choose the split variable j and split point s minimising the total within-region sum of squares, with R₁ = {xⱼ ≤ s}, R₂ = {xⱼ > s} and optimal constant ĉₘ = ave(yᵢ | xᵢ∈Rₘ); recurse on each region. Classification: split to most reduce node impurity Qₘ(T) — Gini Σₖ p̂ₘₖ(1−p̂ₘₖ), or cross-entropy −Σₖ p̂ₘₖ log p̂ₘₖ (both differentiable, hence preferred), or misclassification error 1 − p̂ₘₖ₍ₘ₎.",
       asked:["4 Feb 2026","Jan 2025"] },
     { q:"Classification trees: how can we avoid overfitting (pruning)?",
-      formula:"cα(T) = Σₘ nₘ Qₘ(T) + α|T|",
+      formula:String.raw`c_\alpha(T) = \sum_{m=1}^{|T|} n_m Q_m(T) + \alpha |T|`,
       a:"Grow a large tree T₀ (stop at a minimum node size), then prune it back with cost-complexity pruning by minimising cα(T). |T| is the number of terminal nodes and α ≥ 0 trades tree size against fit: α = 0 keeps the full tree, large α gives a small tree. The optimal α is chosen by cross-validation. Larger α → smaller tree → less overfitting.",
       asked:["26 Jan 2026"] },
     { q:"Random forests: how is variable importance computed?",
-      formula:"θ̂ⱼ = (1/B) Σ_b δ_bⱼ,   δ_bⱼ = π_bⱼ − π_b",
+      formula:String.raw`\hat{\theta}_j = \frac{1}{B} \sum_{b=1}^{B} \delta_{bj},\quad \delta_{bj} = \pi_{bj} - \pi_b`,
       a:"For each tree b, compute its impurity on the out-of-bag (OOB) data, π_b. Then randomly permute the values of predictor j in the OOB data and recompute the impurity, π_bⱼ. The increase δ_bⱼ = π_bⱼ − π_b measures how much accuracy depends on j. The overall variable importance is the average increase across all B trees, θ̂ⱼ — a large value marks an important variable.",
       asked:["Feb 2025 ①"] },
   ],
   13: [
     { q:"SVM, separable case: formulate (math) the optimisation problem and explain it.",
-      formula:"min ‖β‖   s.t.  gᵢ(xᵢᵀβ + β₀) ≥ 1  ∀i",
+      formula:String.raw`\min \|\beta\| \quad \text{s.t. } g_i(x_i^\top \beta + \beta_0) \ge 1 \ \forall i`,
       a:"The original problem is max_{‖β‖=1} M subject to gᵢ(xᵢᵀβ + β₀) ≥ M for all i. Setting M = 1/‖β‖ gives the equivalent convex form above. In words: find the hyperplane that maximises the margin (the band of width 2M containing no points) so every observation lies on the correct side at distance ≥ M. Here gᵢ ∈ {−1,+1} is the class label; minimising ‖β‖ maximises M = 1/‖β‖.",
       asked:["1 Feb 2026","Jan 2025"] },
     { q:"SVM, non-separable case: what has to be minimised?",
-      formula:"min ½‖β‖² + C Σᵢ ξᵢ   s.t.  gᵢ(xᵢᵀβ + β₀) ≥ 1 − ξᵢ,  ξᵢ ≥ 0",
+      formula:String.raw`\min\, \tfrac{1}{2}\|\beta\|^2 + C \sum_{i=1}^{n} \xi_i \quad \text{s.t. } g_i(x_i^\top \beta + \beta_0) \ge 1 - \xi_i,\ \xi_i \ge 0`,
       a:"When the classes overlap, introduce a slack ξᵢ ≥ 0 for each point (how far it lies on the wrong side of its margin) and minimise ½‖β‖² + CΣξᵢ subject to gᵢ(xᵢᵀβ + β₀) ≥ 1 − ξᵢ. The cost C tunes the trade-off: large C → narrow margin, few violations (risk of overfitting); small C → wider, smoother margin. ξᵢ > 1 means xᵢ is misclassified. Solving via Lagrange/KKT gives β = Σᵢ αᵢ gᵢ xᵢ with 0 ≤ αᵢ ≤ C.",
       asked:["Jan 2025","Feb 2025 ②"] },
     { q:"SVM: f(x) = β₀ + βᵀx = 0. Give the solution for β. What are support vectors?",
-      formula:"β = Σᵢ αᵢ gᵢ xᵢ,   Σᵢ αᵢ gᵢ = 0,   0 ≤ αᵢ (≤ C)",
+      formula:String.raw`f(x) = \beta_0 + \beta^\top x = 0;\quad \beta = \sum_{i=1}^{n} \alpha_i g_i x_i,\quad \sum_{i=1}^{n} \alpha_i g_i = 0,\quad 0 \le \alpha_i \ (\le C)`,
       a:"From the Karush-Kuhn-Tucker conditions the solution is β = Σᵢ αᵢ gᵢ xᵢ — a linear combination of the training points — with Σᵢ αᵢ gᵢ = 0 and αᵢ ≥ 0 (and αᵢ ≤ C in the non-separable case). Only the points with αᵢ > 0 contribute: these are the support vectors. They lie on the margin boundary (gᵢ(xᵢᵀβ+β₀)=1, with 0 < αᵢ < C) or, when not separable, on the wrong side (ξᵢ > 0, αᵢ = C). The intercept β₀ comes from any margin support vector via gᵢ(xᵢᵀβ+β₀) = 1; points outside the margin have αᵢ = 0.",
       asked:["4 Feb 2026"] },
     { q:"What is the kernel trick?",
-      formula:"K(u,v) = ⟨h(u), h(v)⟩;   f(x) = Σᵢ αᵢ gᵢ ⟨h(x), h(xᵢ)⟩ + β₀",
+      formula:String.raw`K(u, v) = \langle h(u), h(v) \rangle;\quad f(x) = \sum_{i=1}^{n} \alpha_i g_i \langle h(x), h(x_i) \rangle + \beta_0`,
       a:"Map the data through h(x) into a higher-dimensional space where it is linearly separable. Both the dual optimisation problem and the solution f(x) = Σᵢ αᵢ gᵢ ⟨h(x), h(xᵢ)⟩ + β₀ involve h only through inner products — so we never compute h explicitly; we only need a kernel function K(u,v) = ⟨h(u),h(v)⟩ that returns the inner product in the transformed space directly, giving f(x) = Σᵢ αᵢ gᵢ K(x, xᵢ) + β₀.",
       asked:["26 Jan 2026"] },
   ],
@@ -829,24 +836,25 @@ const examQA = {
 
 let activeId = 1;
 let examMode = false;
+let texQueue = [];
 
 // ── Exam mode ──────────────────────────────────────────────────
-// A formula card is "exam-relevant" if its latex appears (ignoring
-// whitespace) in a past exam question or its formula line for that
-// chapter — the examQA formula strings are kept verbatim-aligned
-// with the chapter cards, so substring matching is reliable.
-const stripWS = s => (s || '').replace(/\s+/g, '');
+// A formula card is "exam-relevant" if its latex appears in an exam
+// question's formula line for that chapter — the examQA formula
+// strings are kept verbatim-aligned with the chapter cards, so
+// substring matching is reliable. A literal ';' is reserved as the
+// separator between formulas (never use the \; spacing macro);
+// spacing macros and whitespace are ignored when comparing.
+const normTex = s => (s || '').replace(/\\(?:qquad|quad|[,!: ])/g, '').replace(/\s+/g, '');
 
 function isExamFormula(chId, latex) {
   const qa = examQA[chId] || [];
-  const cardLatex = stripWS(latex);
-  return qa.some(item => {
-    const segments = (item.formula ? item.formula.split(';') : []).concat(item.q || '');
-    return segments.some(seg => {
-      const s = stripWS(seg);
-      return s.length > 5 && (cardLatex.includes(s) || s.includes(cardLatex));
-    });
-  });
+  const cardTex = normTex(latex);
+  return qa.some(item =>
+    (item.formula ? item.formula.split(';') : []).some(seg => {
+      const s = normTex(seg);
+      return s.length > 5 && (cardTex.includes(s) || s.includes(cardTex));
+    }));
 }
 
 function toggleExamMode() {
@@ -893,6 +901,7 @@ function buildContent() {
   const activeIndex = chapters.findIndex(c => c.id === activeId);
   const ch = chapters[activeIndex];
   const content = document.getElementById('content');
+  texQueue = [];
 
   const noteHTML = ch.note
     ? `<div class="ch-note" style="border-left:3px solid ${ch.accent};background:${ch.accent}18">
@@ -913,7 +922,7 @@ function buildContent() {
             <span class="formula-label-text" style="color:${ch.accent}">${f.label}</span>
             <span class="formula-toggle" id="ft-${fi}">▼</span>
           </div>
-          <div class="formula-math">${f.latex}</div>
+          <div class="formula-math" data-tex="${texQueue.push(f.latex) - 1}"></div>
         </button>
         <div class="formula-vars" id="fv-${fi}" style="--acc:${ch.accent}">
           <div class="vars-heading">Variable guide</div>
@@ -972,7 +981,7 @@ function buildContent() {
           <div class="exam-tags">${tags}</div>
         </button>
         <div class="formula-vars" id="fv-${fi}" style="--acc:${ch.accent}">
-          ${item.formula ? `<div class="formula-math" style="margin-bottom:10px">${item.formula}</div>` : ''}
+          ${item.formula ? `<div class="formula-math" style="margin-bottom:10px" data-tex="${texQueue.push(item.formula) - 1}"></div>` : ''}
           <div class="vars-heading">Answer</div>
           <div class="qa-answer">${item.a}</div>
         </div>
@@ -1010,6 +1019,21 @@ function buildContent() {
       <span class="nav-counter">${activeIndex + 1} / ${chapters.length}</span>
       <button class="nav-btn" onclick="goByOffset(1)" ${activeIndex === chapters.length - 1 ? 'disabled' : ''}>Next →</button>
     </div>`;
+
+  renderMath();
+}
+
+// Render queued LaTeX into the formula boxes; if the KaTeX CDN is
+// unreachable, fall back to showing the raw LaTeX source.
+function renderMath() {
+  document.querySelectorAll('.formula-math[data-tex]').forEach(el => {
+    const tex = texQueue[+el.dataset.tex];
+    if (window.katex) {
+      katex.render(tex, el, { throwOnError: false, displayMode: true });
+    } else {
+      el.textContent = tex;
+    }
+  });
 }
 
 function toggleFormula(fi, accent) {
