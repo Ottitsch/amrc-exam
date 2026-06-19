@@ -674,6 +674,8 @@ const chapters = [
           {sym:String.raw`$s$`, desc:String.raw`Split point — threshold value along predictor $j$`},
           {sym:String.raw`$R_1(j,s)$`, desc:String.raw`Left region: observations with $x_j \le s$`},
           {sym:String.raw`$R_2(j,s)$`, desc:String.raw`Right region: observations with $x_j > s$`},
+          {sym:String.raw`$y_i$`, desc:String.raw`Response (target) value of observation $i$ — the numeric output being predicted`},
+          {sym:String.raw`$x_i$`, desc:String.raw`Predictor vector of observation $i$; $x_j$ is its value on the split variable $j$`},
           {sym:String.raw`$c_1, c_2$`, desc:String.raw`Constant predictions in each region — optimum is $\hat{c}_m = \mathrm{ave}(y_i \mid x_i \in R_m)$, the mean $y$ in that region`},
         ]},
       { label:"Cost-complexity pruning", latex:String.raw`c_\alpha(T) = \sum_{m=1}^{|T|} n_m Q_m(T) + \alpha |T|`,
@@ -744,6 +746,7 @@ const chapters = [
           {sym:String.raw`$h(\cdot)$`, desc:"Implicit mapping to higher-dimensional space — never computed explicitly"},
           {sym:String.raw`$K(u,v)$`, desc:String.raw`Kernel — computes the inner product $\langle h(u), h(v) \rangle$ in the transformed space directly`},
           {sym:String.raw`$f(x)$`, desc:String.raw`The solution involves $h$ only through inner products — that is the trick: replace every $\langle h(\cdot), h(\cdot) \rangle$ by $K(\cdot, \cdot)$ and $h$ never needs to be specified`},
+          {sym:String.raw`$\beta_0$`, desc:String.raw`Bias (intercept) — constant offset outside the sum, recovered from any margin support vector`},
         ]},
     ]
   },
