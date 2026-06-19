@@ -336,6 +336,25 @@ body {
   color: #333;
   line-height: 1.6;
 }
+.qa-short {
+  font-size: 13.5px;
+  color: #1f2d1f;
+  line-height: 1.55;
+  background: #eaf6ec;
+  border-left: 3px solid #3a9a4a;
+  border-radius: 0 7px 7px 0;
+  padding: 8px 11px;
+  margin-bottom: 10px;
+}
+.qa-short .tldr-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #3a9a4a;
+  display: block;
+  margin-bottom: 3px;
+}
 .exam-tags {
   display: flex;
   flex-wrap: wrap;
@@ -789,88 +808,106 @@ const examQA = {
   1: [
     { q:String.raw`Multicollinearity / near-singular $X^\top X$: what goes wrong in estimation and inference?`,
       formula:String.raw`\hat{\beta} = (X^\top X)^{-1} X^\top y;\quad \hat{\beta} \sim N_{p+1}\big(\beta,\ \sigma^2 (X^\top X)^{-1}\big);\quad z_j = \frac{\hat{\beta}_j}{\hat{\sigma}\sqrt{d_j}}`,
+      short:String.raw`Correlated predictors make $X^\top X$ nearly singular, so $(X^\top X)^{-1}$ and the coefficient variances blow up — unstable estimates and unreliable $t$-tests. Fix with selection, PCR/PLS, or ridge/lasso.`,
       a:String.raw`When predictors are highly correlated $X^\top X$ becomes nearly singular, so $(X^\top X)^{-1}$ has huge entries. The LS estimator is then numerically unstable and not uniquely defined. For inference the covariance $\mathrm{Cov}(\hat{\beta}) = \sigma^2 (X^\top X)^{-1}$ blows up, so the standard errors $\sqrt{d_j}\, \hat{\sigma}$ become enormous and the t-tests $z_j = \hat{\beta}_j/(\hat{\sigma}\sqrt{d_j})$ become unreliable — we may wrongly fail to reject $H_0: \beta_j = 0$. Remedies: variable selection, derived inputs (PCR, PLS), or shrinkage (ridge, lasso).`,
       asked:["26 Jan 2026","Feb 2025 ②"] },
     { q:"What is \"statistical inference\"? Give an example in the context of linear regression.",
       formula:String.raw`z_j = \frac{\hat{\beta}_j}{\hat{\sigma}\sqrt{d_j}},\quad \text{under } H_0:\ z_j \sim t_{n-p-1}`,
+      short:String.raw`Inference = drawing conclusions about unknown parameters from sample data (treating $y$ as random): confidence intervals and hypothesis tests. Example: test $H_0:\beta_j = 0$ via $z_j \sim t_{n-p-1}$.`,
       a:String.raw`Statistical inference means drawing conclusions about unknown population parameters from sample data, treating the errors (and hence $y$) as random variables — building confidence intervals and performing hypothesis tests. It needs the assumption $\varepsilon \sim N(0, \sigma^2 I)$. Example: testing $H_0: \beta_j = 0$ with the statistic $z_j$, which under $H_0$ follows $t_{n-p-1}$; a large $|z_j|$ rejects $H_0$, i.e. predictor $j$ contributes significantly. Equivalently, the $1-\alpha$ confidence interval $\hat{\beta}_j \pm z_{1-\alpha/2}\, \sqrt{d_j}\, \hat{\sigma}$.`,
       asked:["1 Feb 2026"] },
   ],
   2: [
     { q:"AIC vs BIC: what is the difference, and when do you use which (variable selection)?",
       formula:String.raw`\mathrm{AIC} = -2 \max \log L + 2p;\quad \mathrm{BIC} = -2 \max \log L + \log(n)\, p`,
+      short:String.raw`Both are $-2\max\log L$ plus a complexity penalty: AIC adds $2p$, BIC adds $\log(n)\,p$. BIC penalises more once $n \ge 8$ → smaller models. AIC for descriptive, BIC for predictive models; pick the smallest value.`,
       a:String.raw`Both penalise model complexity on top of the maximised log-likelihood; AIC's penalty is $2p$, BIC's is $\log(n)\, p$. With $\sigma^2$ known, $\mathrm{AIC} = \mathrm{RSS}/\sigma^2 + 2p$ and $\mathrm{BIC} = \mathrm{RSS}/\sigma^2 + \log(n)\, p$; with $\sigma^2$ unknown, $\mathrm{AIC} = n \log(\mathrm{RSS}/n) + 2p$. For $n \ge 8$ (more than $e^2 \approx 7.3$ observations) BIC penalises more strongly → smaller models. Rule of thumb: AIC for descriptive models, BIC for predictive models. Select the smallest value; absolute values are not interpretable. Used to compare models in forward/backward/best-subset selection (strictly valid for nested models).`,
       asked:["4 Feb 2026","Feb 2025 ①"] },
   ],
   3: [
     { q:"What are principal components? How can they be used for regression (PCR)?",
       formula:String.raw`\mathrm{Cov}(X) = VAV^\top,\quad Z = XV;\quad \hat{\theta}_{1:q} = (Z_{1:q}^\top Z_{1:q})^{-1} Z_{1:q}^\top y,\quad \tilde{\beta} = V_{1:q}\, \hat{\theta}_{1:q}`,
+      short:String.raw`Principal components are the uncorrelated, variance-ordered directions $Z = XV$ from $\mathrm{Cov}(X) = VAV^\top$. PCR regresses $y$ on the first $q$ of them, then back-transforms to $\tilde{\beta}$. Centre and scale $X$ first.`,
       a:String.raw`Principal components are uncorrelated linear combinations $Z = XV$ of the predictors, ordered by variance, from the spectral decomposition $\mathrm{Cov}(X) = VAV^\top$ ($V$ holds the eigenvectors, $A = \mathrm{diag}(a_1 \ge \cdots \ge a_p)$ the variances). PCR regresses $y$ on the first $q$ (highest-variance) components, giving $\hat{\theta}_{1:q}$, then back-transforms to the original space with $\tilde{\beta}$. This handles correlated predictors and the $p > n$ case by discarding low-variance directions. Center and scale $X$ first, since PCA is not scale invariant.`,
       asked:["1 Feb 2026"] },
     { q:"Partial Least Squares (PLS) — and how does its objective differ from PCR?",
       formula:String.raw`w_k = \mathrm{argmax}\, \mathrm{Cov}(y, Xw)\quad \text{s.t. } \|w_k\| = 1,\ \mathrm{Cov}(Xw_k, Xw_j) = 0 \text{ for } j < k;\quad T = XW`,
+      short:String.raw`PLS components $T = XW$ maximise $\mathrm{Cov}(y, Xw)$ — they use $y$, unlike PCR which only maximises the variance of $X$. So PLS picks directions that are both high-variance and correlated with $y$, usually predicting better.`,
       a:String.raw`PLS builds components $T = XW$ that, unlike PCR, use the response $y$: each loading $w_k$ maximises $\mathrm{Cov}(y, Xw)$ subject to $\|w_k\| = 1$ and $\mathrm{Cov}(Xw_k, Xw_j) = 0$ for $j < k$. It then regresses $y$ on the scores ($y = T\gamma + \tilde{\varepsilon}$, so $\tilde{\beta} = W\gamma$). PCR's directions instead maximise the variance of $X$ alone (eigenvectors of $\mathrm{Cov}(X)$) and ignore $y$. So PLS finds directions that are both high-variance and correlated with the response, usually predicting better than PCR. Center (and optionally scale) $X$ and $y$ first.`,
       asked:["4 Feb 2026","Feb 2025 ②"] },
     { q:"PCR and its relationship with ridge regression.",
       formula:String.raw`\hat{y}_{\mathrm{Ridge}} = \sum_{j=1}^{p} u_j\, \frac{d_j^2}{d_j^2 + \lambda}\, u_j^\top y`,
+      short:String.raw`Both act on the principal components of $X$: PCR makes a hard cut (keep the top $q$, drop the rest), while ridge shrinks each component smoothly by $d_j^2/(d_j^2+\lambda)$ — low-variance directions most.`,
       a:String.raw`Both rely on the principal components of $X$. PCR regresses on the first $q$ components and discards the $p-q$ smallest-eigenvalue directions entirely (a hard cut). Ridge also works in the principal-component basis but, instead of discarding, shrinks each component's contribution by the factor $d_j^2/(d_j^2+\lambda)$ — lower-variance (small $d_j^2$) components are shrunk most. So PCR makes a hard cut while ridge applies a smooth shrinkage.`,
       asked:["Feb 2025 ①"] },
     { q:"Ridge vs Lasso: objective functions, constraints, and why Lasso gives exact zeros.",
       formula:String.raw`\hat{\beta}_{\mathrm{Ridge}} = \mathrm{argmin}\Big\{ \sum_{i=1}^{n} \big(y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}\beta_j\big)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \Big\};\quad \hat{\beta}_{\mathrm{Lasso}} = \mathrm{argmin}\Big\{ \sum_{i=1}^{n} \big(y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}\beta_j\big)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \Big\}`,
+      short:String.raw`Both penalise the RSS to stabilise near-singular $X^\top X$. Ridge (L2) shrinks all coefficients smoothly but never to zero; lasso (L1) has a diamond constraint whose corners drive some $\beta_j$ to exactly zero → automatic variable selection.`,
       a:String.raw`Both add a penalty to the RSS to stabilise estimation when $X^\top X$ is near-singular. Ridge uses the L2 penalty $\lambda \sum \beta_j^2$ and has the closed form $(X^\top X + \lambda I)^{-1} X^\top y$ — it shrinks all coefficients but never exactly to zero. Lasso uses the L1 penalty $\lambda \sum |\beta_j|$ (equivalently $\sum |\beta_j| \le s$) and has no closed form (needs an iterative solver); its diamond-shaped constraint makes the RSS contours hit corners, driving some $\beta_j$ to exactly zero → automatic variable selection (Fig. 3.1). Both require standardised inputs and leave the intercept unpenalised.`,
       asked:["Jan 2025"] },
     { q:"Degrees of freedom: how do we obtain them? Derive the df for ridge regression.",
       formula:String.raw`\mathrm{df}(\lambda) = \mathrm{tr}\big(X(X^\top X + \lambda I)^{-1} X^\top\big) = \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda}`,
+      short:String.raw`Effective df = trace of the matrix mapping $y \to \hat{y}$. OLS: $\mathrm{tr}(H) = p$. Ridge: $\mathrm{df}(\lambda) = \mathrm{tr}(X(X^\top X + \lambda I)^{-1} X^\top) = \sum_j d_j^2/(d_j^2 + \lambda)$, running from $p$ (λ=0) down to 0 (λ→∞).`,
       a:String.raw`The effective df is the trace of the matrix mapping $y$ to $\hat{y}$. For OLS $\hat{y} = Hy$ with $H = X(X^\top X)^{-1} X^\top$, so $\mathrm{df} = \mathrm{tr}(H) = p$. For ridge $\hat{y} = X(X^\top X + \lambda I)^{-1} X^\top y$, hence $\mathrm{df}(\lambda) = \mathrm{tr}\big(X(X^\top X + \lambda I)^{-1} X^\top\big)$. Limits confirm it: $\lambda = 0 \to \mathrm{tr}(I_p) = p$; $\lambda \to \infty \to \mathrm{df} \to 0$. Using the SVD $X = UDV^\top$, $\mathrm{df}(\lambda) = \sum_j d_j^2/(d_j^2+\lambda)$, the sum of the ridge shrinkage factors.`,
       asked:["4 Feb 2026"] },
   ],
   5: [
     { q:"LDA: what is its (Bayesian) basis, the discriminant function, and its parameters?",
       formula:String.raw`P(G = k \mid x) = \frac{h_k(x)\, \pi_k}{\sum_{l=1}^{K} h_l(x)\, \pi_l};\quad \delta_k(x) = x^\top \Sigma^{-1} \mu_k - \tfrac{1}{2} \mu_k^\top \Sigma^{-1} \mu_k + \log \pi_k`,
+      short:String.raw`From Bayes, $P(G=k \mid x) \propto \pi_k h_k(x)$ with each $h_k$ Gaussian sharing a common $\Sigma$. The log-ratio's quadratic terms cancel, leaving a linear discriminant $\delta_k(x)$; classify to $\arg\max_k \delta_k(x)$. Estimate $\pi_k, \mu_k, \Sigma$ from the data.`,
       a:String.raw`LDA is founded on Bayes' theorem: the posterior $P(G=k \mid x) \propto h_k(x)\, \pi_k$ combines the prior $\pi_k$ with the class-conditional density $h_k$. Assume each $h_k$ is multivariate Gaussian with a common (pooled) covariance $\Sigma$. Taking log-ratios, the quadratic terms in $x$ cancel, leaving the discriminant $\delta_k(x)$ which is linear in $x$; classify $x$ to $\mathrm{argmax}_k\, \delta_k(x)$. Parameters estimated from the training data: priors $\hat{\pi}_k = n_k/n$, class means $\hat{\mu}_k$, and the pooled $\hat{\Sigma} = \frac{1}{n-K} \sum_k \sum_{g_i=k} (x_i - \hat{\mu}_k)(x_i - \hat{\mu}_k)^\top$.`,
       asked:["26 Jan 2026","Feb 2025 ②"] },
   ],
   7: [
     { q:String.raw`Smoothing splines: the criterion, the solution, the degrees of freedom, and the role of $\lambda$.`,
       formula:String.raw`\mathrm{RSS}(f, \lambda) = \sum_{i=1}^{n} \{y_i - f(x_i)\}^2 + \lambda \int [f''(t)]^2\, dt;\quad \hat{\theta} = (N^\top N + \lambda \Omega_N)^{-1} N^\top y;\quad \mathrm{df}(\lambda) = \mathrm{tr}(S_\lambda)`,
+      short:String.raw`Minimise $\sum (y_i - f(x_i))^2 + \lambda \int f''^2$ over all smooth $f$; $\lambda$ trades fit vs curvature. The minimiser is a natural cubic spline (knots at the $x_i$), solved as a generalised ridge $\hat{\theta} = (N^\top N + \lambda \Omega_N)^{-1} N^\top y$, with $\mathrm{df} = \mathrm{tr}(S_\lambda)$ chosen by CV.`,
       a:String.raw`Among all twice-differentiable functions, minimise the penalised RSS — the first term measures fit, the second penalises curvature, and $\lambda$ trades them off ($\lambda = 0$ interpolates, $\lambda \to \infty$ gives the linear LS fit). The unique minimiser is a natural cubic spline with knots at the data points: $f(x) = \sum_j N_j(x)\, \theta_j$, with $\hat{\theta}$ a generalised ridge regression. In matrix form the criterion is $(y - N\theta)^\top (y - N\theta) + \lambda \theta^\top \Omega_N \theta$ with $\{N\}_{ij} = N_j(x_i)$, $\{\Omega_N\}_{jk} = \int N_j'' N_k''\, dt$. The fit is linear in $y$, $\hat{f}_\lambda = S_\lambda y$, with effective $\mathrm{df}(\lambda) = \mathrm{tr}(S_\lambda)$; choose $\lambda$ (the df) by (generalised) cross-validation.`,
       asked:["26 Jan 2026","1 Feb 2026","Jan 2025","Feb 2025 ②"] },
   ],
   9: [
     { q:"GAM: what is the model, and how are the functions obtained (backfitting algorithm)?",
       formula:String.raw`g[\mu(x)] = \alpha + f_1(x_1) + f_2(x_2) + \cdots + f_p(x_p);\quad \hat{f}_j \leftarrow S_j\Big[\, y_i - \hat{\alpha} - \sum_{k \ne j} \hat{f}_k(x_{ik}) \Big]`,
+      short:String.raw`Model $g[\mu(x)] = \alpha + \sum_j f_j(x_j)$ with unknown smooth $f_j$. Fit by backfitting: cycle through $j$, refitting each $f_j$ as a smoothing spline on the partial residuals $y - \hat{\alpha} - \sum_{k \ne j} \hat{f}_k$, recentre to mean zero, repeat until stable.`,
       a:String.raw`A GAM models the conditional mean through a link $g$: $g[\mu(x)] = \alpha + \sum_j f_j(x_j)$, where each $f_j$ is an unknown smooth (cubic-spline) function minimising the PRSS. The functions are obtained by backfitting: initialise $\hat{\alpha} = \bar{y}$ and $\hat{f}_j \equiv 0$; then cycle $j = 1, \dots, p$, fitting each $\hat{f}_j$ as a smoothing spline $S_j$ applied to the partial residuals $y_i - \hat{\alpha} - \sum_{k \ne j} \hat{f}_k(x_{ik})$, then re-centring $\hat{f}_j$ to sum to zero. Repeat the cycles until all $\hat{f}_j$ stabilise.`,
       asked:["Feb 2025 ①"] },
   ],
   11: [
     { q:"Formulate the splitting criterion for regression and classification trees.",
       formula:String.raw`\min_{j,s} \Big[ \min_{c_1} \sum_{x_i \in R_1} (y_i - c_1)^2 + \min_{c_2} \sum_{x_i \in R_2} (y_i - c_2)^2 \Big]`,
+      short:String.raw`Regression: greedily pick $(j,s)$ minimising the within-region sum of squares, region constant = mean $y$. Classification: split to most reduce node impurity — Gini or cross-entropy (differentiable, preferred) or misclassification error.`,
       a:String.raw`Regression: greedily choose the split variable $j$ and split point $s$ minimising the total within-region sum of squares, with $R_1 = \{x_j \le s\}$, $R_2 = \{x_j > s\}$ and optimal constant $\hat{c}_m = \mathrm{ave}(y_i \mid x_i \in R_m)$; recurse on each region. Classification: split to most reduce node impurity $Q_m(T)$ — Gini $\sum_k \hat{p}_{mk}(1-\hat{p}_{mk})$, or cross-entropy $-\sum_k \hat{p}_{mk} \log \hat{p}_{mk}$ (both differentiable, hence preferred), or misclassification error $1 - \hat{p}_{m k(m)}$.`,
       asked:["4 Feb 2026","Jan 2025"] },
     { q:"Classification trees: how can we avoid overfitting (pruning)?",
       formula:String.raw`c_\alpha(T) = \sum_{m=1}^{|T|} n_m Q_m(T) + \alpha |T|`,
+      short:String.raw`Grow a large tree, then cost-complexity prune by minimising $c_\alpha(T) = \sum_m n_m Q_m(T) + \alpha |T|$. $\alpha$ trades fit vs size ($\alpha = 0$ full tree, large $\alpha$ small tree); choose $\alpha$ by cross-validation.`,
       a:String.raw`Grow a large tree $T_0$ (stop at a minimum node size), then prune it back with cost-complexity pruning by minimising $c_\alpha(T)$. $|T|$ is the number of terminal nodes and $\alpha \ge 0$ trades tree size against fit: $\alpha = 0$ keeps the full tree, large $\alpha$ gives a small tree. The optimal $\alpha$ is chosen by cross-validation. Larger $\alpha$ → smaller tree → less overfitting.`,
       asked:["26 Jan 2026"] },
     { q:"Random forests: how is variable importance computed?",
       formula:String.raw`\hat{\theta}_j = \frac{1}{B} \sum_{b=1}^{B} \delta_{bj},\quad \delta_{bj} = \pi_{bj} - \pi_b`,
+      short:String.raw`For each tree, measure OOB impurity $\pi_b$, permute predictor $j$ in the OOB data, recompute $\pi_{bj}$; the increase $\delta_{bj} = \pi_{bj} - \pi_b$ is how much accuracy depends on $j$. Importance = average over trees, $\hat{\theta}_j = \frac{1}{B} \sum_b \delta_{bj}$.`,
       a:String.raw`For each tree $b$, compute its impurity on the out-of-bag (OOB) data, $\pi_b$. Then randomly permute the values of predictor $j$ in the OOB data and recompute the impurity, $\pi_{bj}$. The increase $\delta_{bj} = \pi_{bj} - \pi_b$ measures how much accuracy depends on $j$. The overall variable importance is the average increase across all $B$ trees, $\hat{\theta}_j$ — a large value marks an important variable.`,
       asked:["Feb 2025 ①"] },
   ],
   13: [
     { q:"SVM, separable case: formulate (math) the optimisation problem and explain it.",
       formula:String.raw`\min \|\beta\| \quad \text{s.t. } g_i(x_i^\top \beta + \beta_0) \ge 1 \ \forall i`,
+      short:String.raw`Maximise the margin around the separating hyperplane: $\max M$ s.t. $g_i(x_i^\top \beta + \beta_0) \ge M$, $\|\beta\| = 1$. Setting $M = 1/\|\beta\|$ gives the convex form $\min \|\beta\|$ s.t. $g_i(x_i^\top \beta + \beta_0) \ge 1$.`,
       a:String.raw`The original problem is $\max_{\|\beta\|=1} M$ subject to $g_i(x_i^\top \beta + \beta_0) \ge M$ for all $i$. Setting $M = 1/\|\beta\|$ gives the equivalent convex form above. In words: find the hyperplane that maximises the margin (the band of width $2M$ containing no points) so every observation lies on the correct side at distance $\ge M$. Here $g_i \in \{-1, +1\}$ is the class label; minimising $\|\beta\|$ maximises $M = 1/\|\beta\|$.`,
       asked:["1 Feb 2026","Jan 2025"] },
     { q:"SVM, non-separable case: what has to be minimised?",
       formula:String.raw`\min\, \tfrac{1}{2}\|\beta\|^2 + C \sum_{i=1}^{n} \xi_i \quad \text{s.t. } g_i(x_i^\top \beta + \beta_0) \ge 1 - \xi_i,\ \xi_i \ge 0`,
+      short:String.raw`Classes overlap, so add slack $\xi_i \ge 0$ and minimise $\tfrac{1}{2}\|\beta\|^2 + C \sum_i \xi_i$ s.t. $g_i(x_i^\top \beta + \beta_0) \ge 1 - \xi_i$. $C$ trades margin width against violations; $\xi_i > 1$ means $x_i$ is misclassified.`,
       a:String.raw`When the classes overlap, introduce a slack $\xi_i \ge 0$ for each point (how far it lies on the wrong side of its margin) and minimise $\tfrac{1}{2}\|\beta\|^2 + C \sum_i \xi_i$ subject to $g_i(x_i^\top \beta + \beta_0) \ge 1 - \xi_i$. The cost $C$ tunes the trade-off: large $C$ → narrow margin, few violations (risk of overfitting); small $C$ → wider, smoother margin. $\xi_i > 1$ means $x_i$ is misclassified. Solving via Lagrange/KKT gives $\beta = \sum_i \alpha_i g_i x_i$ with $0 \le \alpha_i \le C$.`,
       asked:["Jan 2025","Feb 2025 ②"] },
     { q:String.raw`SVM: $f(x) = \beta_0 + \beta^\top x = 0$. Give the solution for $\beta$. What are support vectors?`,
       formula:String.raw`f(x) = \beta_0 + \beta^\top x = 0;\quad \beta = \sum_{i=1}^{n} \alpha_i g_i x_i,\quad \sum_{i=1}^{n} \alpha_i g_i = 0,\quad 0 \le \alpha_i \ (\le C)`,
+      short:String.raw`KKT gives $\beta = \sum_i \alpha_i g_i x_i$ with $\sum_i \alpha_i g_i = 0$ and $0 \le \alpha_i \le C$. Only points with $\alpha_i > 0$ — the support vectors (on or inside the margin) — contribute; $\beta_0$ is recovered from any margin SV.`,
       a:String.raw`From the Karush-Kuhn-Tucker conditions the solution is $\beta = \sum_i \alpha_i g_i x_i$ — a linear combination of the training points — with $\sum_i \alpha_i g_i = 0$ and $\alpha_i \ge 0$ (and $\alpha_i \le C$ in the non-separable case). Only the points with $\alpha_i > 0$ contribute: these are the support vectors. They lie on the margin boundary ($g_i(x_i^\top \beta + \beta_0) = 1$, with $0 < \alpha_i < C$) or, when not separable, on the wrong side ($\xi_i > 0$, $\alpha_i = C$). The intercept $\beta_0$ comes from any margin support vector via $g_i(x_i^\top \beta + \beta_0) = 1$; points outside the margin have $\alpha_i = 0$.`,
       asked:["4 Feb 2026"] },
     { q:"What is the kernel trick?",
       formula:String.raw`K(u, v) = \langle h(u), h(v) \rangle;\quad f(x) = \sum_{i=1}^{n} \alpha_i g_i \langle h(x), h(x_i) \rangle + \beta_0`,
+      short:String.raw`The dual problem and solution use $h$ only through inner products, so replace $\langle h(x), h(x_i) \rangle$ by a kernel $K(x, x_i)$ — never computing $h$ explicitly. This gives $f(x) = \sum_i \alpha_i g_i K(x, x_i) + \beta_0$.`,
       a:String.raw`Map the data through $h(x)$ into a higher-dimensional space where it is linearly separable. Both the dual optimisation problem and the solution $f(x) = \sum_i \alpha_i g_i \langle h(x), h(x_i) \rangle + \beta_0$ involve $h$ only through inner products — so we never compute $h$ explicitly; we only need a kernel function $K(u,v) = \langle h(u), h(v) \rangle$ that returns the inner product in the transformed space directly, giving $f(x) = \sum_i \alpha_i g_i K(x, x_i) + \beta_0$.`,
       asked:["26 Jan 2026"] },
   ],
@@ -1025,6 +1062,7 @@ function buildContent() {
         <div class="formula-vars" id="fv-${fi}" style="--acc:${ch.accent}">
           ${item.formula ? `<div class="formula-math" style="margin-bottom:10px" data-tex="${texQueue.push(item.formula) - 1}"></div>` : ''}
           <div class="vars-heading">Answer</div>
+          ${item.short ? `<div class="qa-short"><span class="tldr-label">In short</span>${item.short}</div>` : ''}
           <div class="qa-answer">${item.a}</div>
         </div>
       </div>`;
