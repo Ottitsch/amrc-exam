@@ -534,7 +534,7 @@ const chapters = [
           {sym:String.raw`$A$`, desc:String.raw`Diagonal matrix of eigenvalues $a_1 \ge a_2 \ge \cdots \ge a_p$ — variance explained by each component`},
           {sym:String.raw`$Z$`, desc:String.raw`Score matrix — $n \times p$ matrix of principal component values; columns of $Z$ are uncorrelated`},
         ]},
-      { label:"PCR — reduced model estimator (p. 19)", latex:String.raw`\hat{\theta}_{1:q} = (Z_{1:q}^\top Z_{1:q})^{-1} Z_{1:q}^\top y,\quad \tilde{\beta} = V_{1:q}\, \hat{\theta}_{1:q}`,
+      { label:"PCR — reduced model estimator (p. 19)", examHide:true, latex:String.raw`\hat{\theta}_{1:q} = (Z_{1:q}^\top Z_{1:q})^{-1} Z_{1:q}^\top y,\quad \tilde{\beta} = V_{1:q}\, \hat{\theta}_{1:q}`,
         vars:[
           {sym:String.raw`$q$`, desc:String.raw`Number of principal components retained ($1 \le q < p$) — chosen by CV`},
           {sym:String.raw`$Z_{1:q}$`, desc:String.raw`First $q$ columns of $Z$ — the $q$ most variable components of $X$`},
@@ -952,7 +952,7 @@ function buildContent() {
     : '';
 
   const visibleFormulas = examMode
-    ? ch.formulas.filter(f => isExamFormula(ch.id, f.latex))
+    ? ch.formulas.filter(f => !f.examHide && isExamFormula(ch.id, f.latex))
     : ch.formulas;
 
   let formulasHTML = '';
