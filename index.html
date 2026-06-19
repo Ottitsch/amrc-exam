@@ -181,6 +181,28 @@ body {
   line-height: 1.55;
 }
 
+/* ── FIGURE CARD ── */
+.figure-card {
+  background: #fff;
+  border: 1.5px solid #dde5f0;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 18px;
+}
+.figure-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: #fff;
+}
+.figure-card .figure-caption {
+  font-size: 12.5px;
+  color: #555;
+  line-height: 1.55;
+  margin-top: 10px;
+}
+
 /* ── FORMULAS HEADING ── */
 .formulas-heading {
   display: flex;
@@ -479,6 +501,7 @@ const chapters = [
     title:"Linear Methods",
     color:"#fdf3e8", accent:"#a85c00", icon:"🔧",
     summary:"Beyond ordinary least squares: PCR and PLS use derived components to handle correlated predictors, while Ridge and Lasso impose penalties to shrink coefficients and reduce variance.",
+    figure:{ src:"assets/lasso-ridge-penalties.jpg", caption:"Figure 3.1: Penalties for Lasso (left) and Ridge (right) regression. The red ellipses are contours of the least-squares loss around the OLS solution β̂; the cyan region is the constraint. Lasso's diamond (L1) has corners on the axes, so the solution often lands at a corner where a coefficient is exactly 0 — variable selection. Ridge's disc (L2) has no corners, so it shrinks coefficients but rarely sets them to 0." },
     formulas:[
       { label:"Bias-Variance decomposition of MSE", latex:String.raw`\mathrm{MSE} = \sigma^2 + \mathrm{Var}(\hat{y}) + [\mathrm{E}(y - \hat{y})]^2`,
         vars:[
@@ -1028,6 +1051,12 @@ function buildContent() {
       <p class="ch-summary">${ch.summary}</p>
       ${noteHTML}
     </div>
+
+    ${ch.figure ? `
+    <div class="figure-card">
+      <img src="${ch.figure.src}" alt="${ch.figure.caption}" loading="lazy">
+      <div class="figure-caption">${ch.figure.caption}</div>
+    </div>` : ''}
 
     ${formulasHTML}
 
