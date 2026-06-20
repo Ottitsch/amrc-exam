@@ -826,7 +826,7 @@ const examQA = {
   ],
   3: [
     { q:"What are principal components? How can they be used for regression (PCR)?",
-      formula:String.raw`\mathrm{Cov}(X) = VAV^\top,\quad Z = XV;\quad \hat{\theta}_{1:q} = (Z_{1:q}^\top Z_{1:q})^{-1} Z_{1:q}^\top y,\quad \tilde{\beta} = V_{1:q}\, \hat{\theta}_{1:q}`,
+      formula:String.raw`\mathrm{Cov}(X) = VAV^\top,\quad Z = XV;\quad \hat{y}_{\mathrm{Ridge}} = \sum_{j=1}^{p} u_j\, \frac{d_j^2}{d_j^2 + \lambda}\, u_j^\top y`,
       short:String.raw`Principal components are the uncorrelated, variance-ordered directions $Z = XV$ from $\mathrm{Cov}(X) = VAV^\top$. PCR regresses $y$ on the first $q$ of them, then back-transforms to $\tilde{\beta}$. Centre and scale $X$ first.`,
       a:String.raw`Principal components are uncorrelated linear combinations $Z = XV$ of the predictors, ordered by variance, from the spectral decomposition $\mathrm{Cov}(X) = VAV^\top$ ($V$ holds the eigenvectors, $A = \mathrm{diag}(a_1 \ge \cdots \ge a_p)$ the variances). PCR regresses $y$ on the first $q$ (highest-variance) components, giving $\hat{\theta}_{1:q}$, then back-transforms to the original space with $\tilde{\beta}$. This handles correlated predictors and the $p > n$ case by discarding low-variance directions. Center and scale $X$ first, since PCA is not scale invariant.`,
       asked:["2 Feb 2026"] },
